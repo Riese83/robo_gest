@@ -1,0 +1,16 @@
+services:
+  db_robogest:
+    image: mysql:8.0
+    container_name: mysql_club_robotica
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: club_robotica
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./bd_script:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  db_data:

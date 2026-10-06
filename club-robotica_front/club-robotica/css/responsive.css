@@ -1,0 +1,364 @@
+/* ========================================
+   NAVEGACIÓN - BASE
+======================================== */
+
+/* El botón hamburguesa permanece oculto en escritorio */
+.nav-toggle {
+    display: none;
+}
+
+
+/* Mantiene el menú organizado en escritorio */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+
+/* ========================================
+   NAVEGACIÓN - TABLET Y MÓVIL
+======================================== */
+
+@media (max-width: 768px) {
+
+    /* Barra superior */
+    .navbar {
+        position: relative;
+    }
+
+
+    /* Mostrar el botón hamburguesa */
+    .nav-toggle {
+        display: flex;
+
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        gap: 5px;
+
+        width: 42px;
+        height: 42px;
+
+        padding: 0;
+
+        background-color: transparent;
+        border: none;
+
+        cursor: pointer;
+    }
+
+
+    /* Líneas del icono hamburguesa */
+    .nav-toggle span {
+        display: block;
+
+        width: 24px;
+        height: 2px;
+
+        background-color: var(--color-primary);
+
+        border-radius: 999px;
+
+        transition: 
+            transform 0.2s ease,
+            opacity 0.2s ease;
+    }
+
+    .nav-toggle.nav-toggle--open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle.nav-toggle--open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.nav-toggle--open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+
+    /* Menú oculto inicialmente */
+    .nav-menu {
+        display: flex;
+        position: absolute;
+        z-index: 100;
+        top: calc(100% + 0.5rem);
+        right: 0;
+
+        width: min(280px, calc(100vw - 2rem));
+
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 0.75rem;
+
+        background-color: var(--color-white);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+
+        transition:
+            opacity 0.25s ease,
+            transform 0.25s ease,
+            visibility 0.25s ease;
+
+        pointer-events: none;
+    }
+
+
+    /* Menú visible cuando JavaScript agregue esta clase */
+    .nav-menu.nav-menu--open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+
+        pointer-events: auto;
+    }
+
+
+    /* Enlaces en columna */
+    .nav-links {
+        display: flex;
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 0.25rem;
+    }
+
+    .nav-links .nav-link {
+        display: flex;
+        align-items: center;
+
+        min-height: 42px;
+
+        padding: 0.5rem 0.75rem;
+
+        border-radius: 0.5rem;
+
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease;
+    }
+
+    .nav-links .nav-link:hover {
+        background-color: var(--color-beige);
+    }
+
+    .nav-links .nav-link--active {
+        color: var(--color-primary);
+        background-color: var(--color-beige);
+    }
+
+
+    /* El botón de login ocupa todo el ancho */
+    .nav-login {
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        min-height: 48px;
+
+        text-align: center;
+    }
+
+
+}
+
+/* ========================================
+   CATEGORÍAS - INTRODUCCIÓN MÓVIL
+======================================== */
+
+@media (max-width: 768px) {
+
+    .categories-hero {
+
+        min-height: 100vh;
+
+        display: flex;
+
+        align-items: center;
+
+        padding: 6rem 0;
+
+    }
+
+
+    .categories-hero__content {
+
+        width: min(100% - 2.5rem, 1400px);
+
+    }
+
+
+    .categories-hero .section-label {
+
+        margin-bottom: 1rem;
+
+        font-size: clamp(1.4rem, 7vw, 2rem);
+
+    }
+
+
+    .categories-hero h1 {
+
+        margin-bottom: 1.5rem;
+
+        font-size: clamp(2.4rem, 11vw, 3.8rem);
+
+        line-height: 1.1;
+
+    }
+
+
+    .categories-hero p:not(.section-label) {
+
+        font-size: 1rem;
+
+        line-height: 1.7;
+
+    }
+
+}
+
+/* ========================================
+   CATEGORÍAS DISPONIBLES - MÓVIL
+======================================== */
+
+@media (max-width: 768px) {
+
+    .available-categories {
+
+        padding: 6rem 0;
+
+    }
+
+
+    .available-categories__heading {
+
+        margin-bottom: 3rem;
+
+    }
+
+
+    .available-categories__heading h2 {
+
+        font-size: clamp(2rem, 9vw, 3rem);
+
+        line-height: 1.15;
+
+    }
+
+
+    .categories-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 2rem;
+
+        width: 100%;
+
+        max-width: 500px;
+
+        margin: 0 auto;
+
+    }
+
+
+    .category-card__image-placeholder {
+
+        min-height: 240px;
+
+    }
+
+
+    .category-card__content {
+
+        padding: 2rem;
+
+    }
+
+
+    .category-card__content h3 {
+
+        font-size: 1.4rem;
+
+    }
+
+
+    .category-card__content p {
+
+        font-size: 1rem;
+
+        line-height: 1.7;
+
+    }
+
+}
+
+/* ========================================
+
+   CONTACTO - TABLET Y MÓVIL
+
+======================================== */
+
+@media (max-width: 768px) {
+
+    /* Sección principal */
+
+    .contact-section {
+        min-height: auto;
+        padding: 2rem 0 4rem;
+    }
+
+    /* Tarjeta principal */
+
+    .contact-card {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Lado izquierdo */
+
+    .contact-info {
+        padding: 3rem 2rem;
+    }
+
+    .contact-info__intro {
+        margin-bottom: 3rem;
+    }
+
+    .contact-info__intro h1 {
+        font-size: clamp(1.8rem, 7vw, 2.4rem);
+    }
+
+    /* Los cuatro bloques de información
+       pasan a una sola columna */
+
+    .contact-info__grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    /* Lado derecho - formulario */
+
+    .contact-form-container {
+        padding: 3rem 2rem;
+    }
+
+    /* Campos del formulario */
+
+    .form-group {
+        margin-bottom: 1.4rem;
+    }
+
+}

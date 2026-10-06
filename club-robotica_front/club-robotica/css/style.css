@@ -1,0 +1,307 @@
+/* ========================================
+   VARIABLES GLOBALES
+======================================== */
+
+:root {
+    /* Colores principales */
+    --color-primary: #12355B;
+    --color-secondary: #1E6F9F;
+    --color-accent: #22A6A8;
+
+    /* Fondos */
+    --color-background: #F7F9FC;
+    --color-white: #FFFFFF;
+    --color-beige: #F3EBDD;
+
+    /* Textos */
+    --color-text: #1F2933;
+    --color-text-secondary: #667085;
+
+    /* Bordes */
+    --color-border: #D9E1E8;
+
+    /* Tipografía */
+    --font-primary: "Inter", Arial, sans-serif;
+
+    /* Espaciados */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-xxl: 5rem;
+
+    /* Bordes redondeados */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+
+    /* Sombras */
+    --shadow-sm: 0 2px 8px rgba(18, 53, 91, 0.08);
+    --shadow-md: 0 8px 24px rgba(18, 53, 91, 0.12);
+
+    /* Transiciones */
+    --transition: 0.3s ease;
+}
+
+
+/* ========================================
+   ESTILOS GENERALES
+======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+
+/* ========================================
+   ELEMENTOS BÁSICOS
+======================================== */
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+
+/* ========================================
+   CONTENEDOR GENERAL
+======================================== */
+
+.container {
+    width: min(90%, 1200px);
+    margin: 0 auto;
+}
+
+
+/* ========================================
+   SECCIONES
+======================================== */
+
+.section {
+    padding: var(--spacing-xxl) 0;
+}
+
+
+.section--beige {
+    background-color: var(--color-beige);
+}
+
+
+.section--white {
+    background-color: var(--color-white);
+}
+
+
+/* ========================================
+   TÍTULOS Y TEXTOS
+======================================== */
+
+.section-header {
+    max-width: 700px;
+    margin-bottom: var(--spacing-xl);
+}
+
+
+.section-title {
+    color: var(--color-primary);
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-sm);
+}
+
+
+.section-description {
+    color: var(--color-text-secondary);
+    max-width: 650px;
+}
+
+
+/* ========================================
+   BOTONES
+======================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.75rem 1.25rem;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+
+.btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+
+.btn--primary:hover {
+    background-color: var(--color-secondary);
+}
+
+
+.btn--secondary {
+    background-color: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+
+    color: var(--color-white);
+
+    backdrop-filter: blur(4px);
+}
+
+
+.btn--secondary:hover {
+    background-color: rgba(255, 255, 255, 0.28);
+    border-color: var(--color-white);
+}
+
+/* ========================================
+   BARRA DE NAVEGACIÓN
+======================================== */
+
+.site-header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    z-index: 1000;
+
+    background-color: var(--color-white);
+
+    border-bottom: 1px solid var(--color-border);
+
+    transition: transform 0.3s ease;
+}
+
+.site-header--hidden {
+    transform: translateY(-100%);
+}
+
+main {
+    padding-top: 80px;
+}
+
+.navbar {
+    min-height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: var(--spacing-lg);
+}
+
+
+/* ========================================
+   IDENTIDAD DEL CLUB
+======================================== */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    flex-shrink: 0;
+}
+
+
+.logo-placeholder {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--color-beige);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+
+.brand-name {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* ========================================
+   ENLACES DE NAVEGACIÓN
+======================================== */
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: var(--spacing-md);
+
+    flex: 1;
+}
+
+
+.nav-link {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+
+    transition: color var(--transition);
+}
+
+
+.nav-link:hover {
+    color: var(--color-primary);
+}
+
+
+.nav-link--active {
+    color: var(--color-primary);
+    font-weight: 700;
+}

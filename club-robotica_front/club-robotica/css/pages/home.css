@@ -1,0 +1,389 @@
+/* ========================================
+   PÁGINA PRINCIPAL - HERO
+======================================== */
+
+.hero {
+    position: relative;
+    min-height: 650px;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+}
+
+
+/* ========================================
+   SLIDES / IMÁGENES
+======================================== */
+
+.hero-slider {
+    position: absolute;
+    inset: 0;
+}
+
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+
+    transition: opacity 0.8s ease;
+}
+
+
+.hero-slide--active {
+    opacity: 1;
+}
+
+
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* ========================================
+   OVERLAY
+======================================== */
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+
+    background-color: rgba(10, 31, 68, 0.72);
+}
+
+
+/* ========================================
+   CONTENIDO DEL HERO
+======================================== */
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 680px;
+
+    margin-left: 8%;
+    margin-right: auto;
+
+    color: var(--color-white);
+}
+
+
+.hero-eyebrow {
+    margin-bottom: var(--spacing-sm);
+
+    color: var(--color-accent);
+
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+
+.hero-title {
+    margin-bottom: var(--spacing-md);
+
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    line-height: 1.05;
+
+    color: var(--color-white);
+}
+
+
+.hero-description {
+    max-width: 620px;
+    margin-bottom: var(--spacing-lg);
+
+    color: rgba(255, 255, 255, 0.88);
+
+    font-size: 1.1rem;
+}
+
+
+/* ========================================
+   BOTONES DEL HERO
+======================================== */
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+
+/* ========================================
+   CONTROLES DEL SLIDER
+======================================== */
+
+.hero-controls {
+    position: absolute;
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    pointer-events: none;
+}
+
+
+.hero-arrow {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: var(--spacing-md);
+
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+
+    color: var(--color-white);
+
+    font-size: 1.2rem;
+    cursor: pointer;
+
+    transition:
+        background-color var(--transition),
+        transform var(--transition);
+
+    pointer-events: auto;
+}
+
+
+.hero-arrow:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+    transform: scale(1.05);
+}
+
+
+/* ========================================
+   INDICADORES
+======================================== */
+
+.hero-indicators {
+    position: absolute;
+
+    left: 50%;
+    bottom: var(--spacing-lg);
+
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    transform: translateX(-50%);
+}
+
+
+.hero-indicator {
+    width: 10px;
+    height: 10px;
+
+    padding: 0;
+
+    background-color: rgba(255, 255, 255, 0.45);
+    border: none;
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--transition),
+        transform var(--transition);
+}
+
+
+.hero-indicator--active {
+    background-color: var(--color-accent);
+    transform: scale(1.2);
+}
+
+/* ========================================
+   SOBRE EL CLUB
+======================================== */
+
+.about-club {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+
+    padding: 6rem 0;
+    background-color: var(--color-beige);
+}
+
+
+.about-club__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 5rem;
+}
+
+
+/* ========================================
+   PLACEHOLDER DE IMAGEN
+======================================== */
+
+.about-club__image-placeholder {
+    min-height: 420px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--color-white);
+    border: 1px solid rgba(10, 45, 74, 0.12);
+    border-radius: 20px;
+
+    color: var(--color-primary);
+
+    font-weight: 600;
+    letter-spacing: 0.08em;
+
+    box-shadow: 0 12px 30px rgba(10, 45, 74, 0.08);
+}
+
+
+.about-club__image-placeholder span {
+    padding: 1rem 1.5rem;
+
+    border: 1px solid rgba(10, 45, 74, 0.2);
+    border-radius: 8px;
+
+    font-size: 0.8rem;
+}
+
+
+/* ========================================
+   CONTENIDO
+======================================== */
+
+.about-club__content {
+    max-width: 560px;
+}
+
+
+.about-club__content h2 {
+    margin-bottom: 1.5rem;
+
+    color: var(--color-primary);
+
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.15;
+}
+
+
+.about-club__content p:not(.section-label) {
+    margin-bottom: 1.25rem;
+
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+}
+
+
+.about-club__content .btn {
+    margin-top: 1rem;
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+
+    /* HERO */
+    .hero {
+        min-height: 100svh;
+    }
+
+    .hero-content {
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    .hero-eyebrow {
+        font-size: 0.75rem;
+    }
+
+    .hero-title {
+        font-size: clamp(2.8rem, 13vw, 4.2rem);
+        line-height: 1.05;
+    }
+
+    .hero-description {
+        max-width: 100%;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .hero-actions .btn {
+        width: 280px;
+        min-width: 0;
+        text-align: center;
+    }
+
+    .hero-controls {
+        display: none;
+    }
+
+    .hero-indicators {
+        bottom: 1.5rem;
+    }
+
+    .hero-indicator {
+        width: 8px;
+        height: 8px;
+    }
+
+     /* SOBRE EL CLUB */
+    .about-club {
+        min-height: 100svh;
+
+        display: flex;
+        align-items: center;
+
+        padding: 2.5rem 0;
+    }
+
+
+    .about-club__container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+
+    .about-club__image-placeholder {
+        min-height: 250px;
+    }
+
+
+    .about-club__content {
+        max-width: none;
+    }
+
+}

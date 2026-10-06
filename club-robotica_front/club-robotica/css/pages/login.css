@@ -1,0 +1,277 @@
+/* ========================================
+   PÁGINA DE INICIO DE SESIÓN
+======================================== */
+
+/* Sección principal */
+
+.login-section {
+    min-height: calc(100vh - 80px);
+    padding: 1rem 0;
+    background-color: #0a1f44;
+}
+
+
+/* ========================================
+   TARJETA PRINCIPAL
+======================================== */
+
+.login-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
+}
+
+
+/* ========================================
+   LOGO DE INICIO DE SESIÓN
+======================================== */
+
+.login-card__logo {
+    width: 140px;
+    height: 140px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 0.75rem;
+
+    border-radius: 50%;
+
+    background-color: #e8eef2;
+    color: #0a1f44;
+
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+
+/* ========================================
+   INTRODUCCIÓN
+======================================== */
+
+.login-card__intro {
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.login-card__intro h1 {
+    margin: 0 0 0.4rem;
+
+    color: #0a1f44;
+
+    font-size: clamp(2rem, 5vw, 2.6rem);
+    line-height: 1.15;
+}
+
+.login-card__intro p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+
+/* ========================================
+   FORMULARIO DE INICIO DE SESIÓN
+======================================== */
+
+.login-form {
+    width: 100%;
+}
+
+
+/* ========================================
+   GRUPOS DE CAMPOS
+======================================== */
+
+.login-form .form-group {
+    margin-bottom: 0.85rem;
+}
+
+.login-form label {
+    display: block;
+
+    margin-bottom: 0.4rem;
+
+    color: #0a1f44;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+
+/* ========================================
+   CAMPOS DE ENTRADA
+======================================== */
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+
+    padding: 0.7rem 0.9rem;
+
+    border: 1px solid #d9dee7;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+    color: #0a1f44;
+
+    font-family: inherit;
+    font-size: 0.95rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* Placeholder */
+
+.login-form input::placeholder {
+    color: #9aa3b2;
+}
+
+
+/* Campo seleccionado */
+
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+    border-color: #0a1f44;
+
+    box-shadow: 0 0 0 3px rgba(10, 31, 68, 0.08);
+}
+
+
+/* ========================================
+   MOSTRAR CONTRASEÑA
+======================================== */
+
+.password-toggle {
+    display: flex;
+    align-items: center;
+
+    gap: 0.6rem;
+
+    margin-bottom: 0.75rem;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.9rem;
+    font-weight: 400;
+
+    cursor: pointer;
+}
+
+.password-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+
+    margin: 0;
+
+    cursor: pointer;
+
+    accent-color: #0a1f44;
+}
+
+
+/* ========================================
+   RECUPERACIÓN DE CONTRASEÑA
+======================================== */
+
+.login-form__forgot-password {
+    display: inline-block;
+
+    margin-bottom: 0.75rem;
+
+    color: #0a1f44;
+
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.login-form__forgot-password:hover {
+    color: var(--color-accent);
+}
+
+
+/* ========================================
+   BOTÓN DE INICIO DE SESIÓN
+======================================== */
+
+.login-form__button {
+    width: 100%;
+    min-height: 46px;
+
+    margin-top: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ========================================
+   NUEVOS MIEMBROS
+======================================== */
+
+.login-card__register {
+    margin-top: 1rem;
+
+    padding: 1rem;
+
+    text-align: center;
+
+    background-color: #f4f6f8;
+    border-radius: 12px;
+}
+
+.login-card__register p {
+    margin: 0 0 0.6rem;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.login-card__contact-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+
+    padding: 0.55rem 1.3rem;
+
+    color: #0a1f44;
+
+    background-color: transparent;
+
+    border: 1px solid #0a1f44;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.login-card__contact-button:hover {
+    background-color: #dbeaf5;
+    border-color: #dbeaf5;
+
+    color: #0a1f44;
+}

@@ -1,0 +1,45 @@
+# Entorno y credenciales
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editores e IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.parcel-cache/
+.next/
+
+# Java / Maven / Gradle (en preparación para Backend)
+target/
+.gradle/
+*.class
+*.jar
+*.war
+*.ear
+
+# Datos locales / Docker
+data/
+db_data/
+mysql_data/

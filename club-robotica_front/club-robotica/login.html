@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Club de Robótica | Iniciar sesión</title>
+
+    <!-- Tipografía -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Estilos globales -->
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <!-- Estilos específicos de la página -->
+    <link
+        rel="stylesheet"
+        href="css/pages/login.css"
+    >
+
+    <!-- Estilos responsive -->
+    <link
+        rel="stylesheet"
+        href="css/responsive.css"
+    >
+</head>
+
+<body>
+
+    <!-- ========================================
+    BARRA DE NAVEGACIÓN
+    ========================================= -->
+
+    <header class="site-header">
+        <nav class="navbar container">
+
+            <!-- Identidad del club -->
+            <a
+                href="index.html"
+                class="brand"
+            >
+
+                <div
+                    class="logo-placeholder"
+                    aria-hidden="true"
+                >
+                    LOGO
+                </div>
+
+                <span class="brand-name">
+                    Club de Robótica
+                </span>
+
+            </a>
+
+            <!-- Botón hamburguesa -->
+            <button
+                class="nav-toggle"
+                type="button"
+                aria-label="Abrir menú de navegación"
+                aria-expanded="false"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Menú de navegación -->
+            <div class="nav-menu">
+
+                <div class="nav-links">
+
+                    <a
+                        href="index.html"
+                        class="nav-link"
+                    >
+                        Inicio
+                    </a>
+
+                    <a
+                        href="objetivos.html"
+                        class="nav-link"
+                    >
+                        Objetivos
+                    </a>
+
+                    <a
+                        href="categorias.html"
+                        class="nav-link"
+                    >
+                        Categorías
+                    </a>
+
+                    <a
+                        href="noticias.html"
+                        class="nav-link"
+                    >
+                        Noticias
+                    </a>
+
+                    <a
+                        href="contacto.html"
+                        class="nav-link"
+                    >
+                        Contacto
+                    </a>
+
+                </div>
+
+                <!-- Página actual -->
+                <a
+                    href="login.html"
+                    class="btn btn--primary nav-login"
+                >
+                    Iniciar sesión
+                </a>
+
+            </div>
+
+        </nav>
+    </header>
+
+
+    <!-- ========================================
+    CONTENIDO PRINCIPAL
+    ========================================= -->
+
+    <main>
+
+        <!-- ========================================
+        SECCIÓN DE INICIO DE SESIÓN
+        ========================================= -->
+
+        <section class="login-section">
+
+            <div class="container">
+
+                <!-- Tarjeta principal -->
+                <div class="login-card">
+
+                    <!-- Logo circular -->
+                    <div
+                        class="login-card__logo"
+                        aria-hidden="true"
+                    >
+                        LOGO
+                    </div>
+
+
+                    <!-- Introducción -->
+                    <div class="login-card__intro">
+
+                        <h1>
+                            Iniciar sesión
+                        </h1>
+
+                        <p>
+                            Si ya eres miembro del club, inicie sesión.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ========================================
+                    FORMULARIO DE INICIO DE SESIÓN
+                    ========================================= -->
+
+                    <form class="login-form">
+
+                        <!-- Número de cédula -->
+                        <div class="form-group">
+
+                            <label for="cedula">
+                                Número de cédula
+                            </label>
+
+                            <input
+                                type="text"
+                                id="cedula"
+                                name="cedula"
+                                placeholder="Ingrese su número de cédula"
+                            >
+
+                        </div>
+
+
+                        <!-- Contraseña -->
+                        <div class="form-group">
+
+                            <label for="password">
+                                Contraseña
+                            </label>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Ingrese su contraseña"
+                            >
+
+                        </div>
+
+
+                        <!-- Mostrar contraseña -->
+                        <label class="password-toggle">
+
+                            <input
+                                type="checkbox"
+                                id="show-password"
+                            >
+
+                            <span>
+                                Mostrar contraseña
+                            </span>
+
+                        </label>
+
+
+                        <!-- Recuperación de contraseña -->
+                        <a
+                            href="#"
+                            class="login-form__forgot-password"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </a>
+
+
+                        <!-- Botón principal -->
+                        <button
+                            type="submit"
+                            class="btn btn--primary login-form__button"
+                        >
+                            Iniciar sesión
+                        </button>
+
+                    </form>
+
+
+                    <!-- ========================================
+                    NUEVOS MIEMBROS
+                    ========================================= -->
+
+                    <div class="login-card__register">
+
+                        <p>
+                            ¿Aún no eres miembro del club?
+                        </p>
+
+                        <a
+                            href="contacto.html"
+                            class="btn login-card__contact-button"
+                        >
+                            Contactar al club
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/pages/login.js"></script>
+
+</body>
+</html>
