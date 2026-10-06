@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * Controlador REST para el registro de marcaciones IoT (ESP32 con lector RFID/NFC).
  */
-@Path("/api/asistencia")
+@Path("/asistencia")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AsistenciaController {

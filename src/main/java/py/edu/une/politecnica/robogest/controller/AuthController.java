@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * Controlador REST para el modulo de autenticacion de usuarios.
  */
-@Path("/api/auth")
+@Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthController {

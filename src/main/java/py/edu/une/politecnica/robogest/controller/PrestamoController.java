@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * Controlador REST protegido para la gestion y aprobacion transaccional de prestamos.
  */
-@Path("/api/prestamos")
+@Path("/prestamos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PrestamoController {

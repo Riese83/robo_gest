@@ -6,7 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 /**
  * Configuracion y punto de entrada para los servicios RESTful (JAX-RS / Jersey).
  */
-@ApplicationPath("/")
+@ApplicationPath("/api")
 public class RestApplication extends ResourceConfig {
 
     public RestApplication() {
