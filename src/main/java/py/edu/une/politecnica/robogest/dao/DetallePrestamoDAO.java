@@ -13,4 +13,10 @@ public interface DetallePrestamoDAO extends GenericDAO<DetallePrestamo, DetalleP
     List<DetallePrestamo> findByPrestamoId(Long prestamoId);
 
     List<DetallePrestamo> findByMaterialId(Long materialId);
+
+    /**
+     * Calcula la cantidad total reservada/ocupada de un material en prestamos activos
+     * (estados APROBADO, ENTREGADO o VENCIDO).
+     */
+    int getCantidadReservadaPorMaterial(Long materialId);
 }

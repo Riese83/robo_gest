@@ -26,9 +26,36 @@
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
         <mockito.version>5.12.0</mockito.version>
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <jakarta.transaction.version>2.0.1</jakarta.transaction.version>
     </properties>
 
     <dependencies>
+        <!-- Jakarta Transactions (Anotacion @Transactional estandar) -->
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>${jakarta.transaction.version}</version>
+        </dependency>
+
+        <!-- JSON Web Token (JJWT) -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- Jakarta Persistence API y Hibernate ORM -->
         <dependency>
             <groupId>jakarta.persistence</groupId>

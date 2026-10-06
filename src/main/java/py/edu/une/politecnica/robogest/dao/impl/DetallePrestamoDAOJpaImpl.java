@@ -36,4 +36,20 @@ public class DetallePrestamoDAOJpaImpl extends GenericDAOJpaImpl<DetallePrestamo
         query.setParameter("materialId", materialId);
         return query.getResultList();
     }
+
+    @Override
+    public int getCantidadReservadaPorMaterial(Long materialId) {
+        String jpql = "SELECT COALESCE(SUM(dp.cantidad), 0) FROM DetallePrestamo dp " +
+                      "WHERE dp.material.id = :materialId " +
+                      "  AND dp.prestamo.estado IN :estados";
+        TypedQuery<Number> query = em.createQuery(jpql, Number.class);
+        query.setParameter("materialId", materialId);
+        query.setParameter("estados", List.of(
+                py.edu.une.politecnica.robogest.entity.enums.EstadoPrestamoEnum.APROBADO,
+                py.edu.une.politecnica.robogest.entity.enums.EstadoPrestamoEnum.ENTREGADO,
+                py.edu.une.politecnica.robogest.entity.enums.EstadoPrestamoEnum.VENCIDO
+        ));
+        Number result = query.getSingleResult();
+        return result != null ? result.intValue() : 0;
+    }
 }
