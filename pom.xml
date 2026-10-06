@@ -9,7 +9,7 @@
     <packaging>war</packaging>
 
     <name>Robo_Gest</name>
-    <description>Sistema de Gestion del Club de Robotica - FP-UNE</description>
+    <description>Robo_Gest - Management System for FP-UNE Robotics Club</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -18,10 +18,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Versiones de dependencias principales -->
+        <!-- Core dependency versions -->
         <hibernate.version>6.5.2.Final</hibernate.version>
         <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
         <mysql.connector.version>8.4.0</mysql.connector.version>
+        <protobuf.version>3.25.8</protobuf.version>
         <jbcrypt.version>0.4</jbcrypt.version>
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
         <mockito.version>5.12.0</mockito.version>
@@ -29,11 +30,30 @@
         <jjwt.version>0.12.6</jjwt.version>
         <jakarta.transaction.version>2.0.1</jakarta.transaction.version>
         <jersey.version>3.1.7</jersey.version>
-        <jackson.version>2.17.1</jackson.version>
+        <jackson.version>2.18.3</jackson.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Align and upgrade Jackson modules to eliminate transitive vulnerabilities -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Override transitive protobuf-java to resolve CVE-2024-7254 -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <!-- Jakarta RESTful Web Services API (JAX-RS) y Jersey -->
+        <!-- Jakarta RESTful Web Services API (JAX-RS) and Jersey -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
@@ -57,10 +77,9 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
 
-        <!-- Jakarta Transactions (Anotacion @Transactional estandar) -->
+        <!-- Jakarta Transactions (@Transactional annotation support) -->
         <dependency>
             <groupId>jakarta.transaction</groupId>
             <artifactId>jakarta.transaction-api</artifactId>
@@ -85,7 +104,8 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- Jakarta Persistence API y Hibernate ORM -->
+
+        <!-- Jakarta Persistence API and Hibernate ORM -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
@@ -97,21 +117,21 @@
             <version>${hibernate.version}</version>
         </dependency>
 
-        <!-- Driver MySQL Connector/J -->
+        <!-- MySQL Connector/J Driver -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>${mysql.connector.version}</version>
         </dependency>
 
-        <!-- jBCrypt (Hasing y verificacion de contraseñas) -->
+        <!-- jBCrypt (Password hashing and verification) -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>${jbcrypt.version}</version>
         </dependency>
 
-        <!-- Jakarta Servlet API (Provided para despliegue WAR en contenedor de servlets) -->
+        <!-- Jakarta Servlet API (Provided for WAR servlet container deployment) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -157,7 +177,7 @@
     <build>
         <finalName>robo_gest</finalName>
         <plugins>
-            <!-- Compilador configurado para Java 21 -->
+            <!-- Compiler plugin configured for Java 21 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -168,7 +188,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin WAR sin requerir obligatoriamente web.xml inicial -->
+            <!-- Maven WAR plugin configured without mandatory web.xml -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -178,7 +198,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin de ejecucion de pruebas Surefire -->
+            <!-- Maven Surefire plugin for test execution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
