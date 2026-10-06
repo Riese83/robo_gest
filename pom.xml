@@ -188,13 +188,18 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven WAR plugin configured without mandatory web.xml -->
+            <!-- Maven WAR plugin configured without mandatory web.xml and includes frontend resources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webResources>
+                        <resource>
+                            <directory>club-robotica_front</directory>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
 

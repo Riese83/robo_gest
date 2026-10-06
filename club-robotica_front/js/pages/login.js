@@ -1,39 +1,38 @@
 // ========================================
-// MOSTRAR Y OCULTAR CONTRASEÑA
+// CONTROLADOR DE PÁGINA LOGIN
+// Club de Robótica - FP-UNE
 // ========================================
 
-// Buscamos el campo de contraseña
-const passwordInput = document.querySelector("#password");
+document.addEventListener("DOMContentLoaded", function () {
 
-// Buscamos el checkbox
-const showPasswordCheckbox = document.querySelector(
-    "#show-password"
-);
-
-// Solo ejecutamos esta lógica si ambos elementos existen
-if (passwordInput && showPasswordCheckbox) {
-
-    showPasswordCheckbox.addEventListener(
-        "change",
-        function () {
-
-            // Si el checkbox está marcado,
-            // mostramos la contraseña
-            if (showPasswordCheckbox.checked) {
-
-                passwordInput.type = "text";
-
-            }
-
-            // Si no está marcado,
-            // ocultamos la contraseña
-            else {
-
-                passwordInput.type = "password";
-
-            }
-
+    // 1. Si el usuario ya cuenta con sesión activa, redirigir al Dashboard
+    if (window.Auth && typeof window.Auth.redirectIfAuthenticated === "function") {
+        if (window.Auth.redirectIfAuthenticated()) {
+            return;
         }
-    );
+    }
 
-}
+    // 2. Mostrar / Ocultar contraseña
+    const passwordInput = document.querySelector("#password");
+    const showPasswordCheckbox = document.querySelector("#show-password");
+
+    if (passwordInput && showPasswordCheckbox) {
+        showPasswordCheckbox.addEventListener("change", function () {
+            if (showPasswordCheckbox.checked) {
+                passwordInput.type = "text";
+            } else {
+                passwordInput.type = "password";
+            }
+        });
+    }
+
+    // 3. Inicializar captura y autenticación del formulario con auth.js
+    if (window.Auth && typeof window.Auth.initLoginForm === "function") {
+        window.Auth.initLoginForm({
+            form: ".login-form",
+            identificador: "#cedula",
+            password: "#password",
+            alertContainer: ".login-card__intro"
+        });
+    }
+});
