@@ -13,16 +13,15 @@ Robo_Gest/
 ├── README.md                          # Documentación del proyecto
 ├── bd_script/
 │   └── club_robotica_mysql8.sql       # Esquema DDL, vistas y procedimientos almacenados
-└── club-robotica_front/
-    └── club-robotica/                 # Frontend y Landing Page
-        ├── index.html                 # Página principal / Inicio
-        ├── objetivos.html             # Misión y objetivos
-        ├── categorias.html            # Categorías de robótica
-        ├── contacto.html              # Formulario y canales de contacto
-        ├── login.html                 # Pantalla de acceso para integrantes
-        ├── css/                       # Hojas de estilo modulares
-        ├── js/                        # Scripts e interactividad (Vanilla JS)
-        └── assets/images/             # Recursos gráficos e imágenes
+└── club-robotica_front/               # Frontend y Landing Page
+    ├── index.html                     # Página principal / Inicio
+    ├── objetivos.html                 # Misión y objetivos
+    ├── categorias.html                # Categorías de robótica
+    ├── contacto.html                  # Formulario y canales de contacto
+    ├── login.html                     # Pantalla de acceso para integrantes
+    ├── css/                           # Hojas de estilo modulares
+    ├── js/                            # Scripts e interactividad (Vanilla JS)
+    └── assets/images/                 # Recursos gráficos e imágenes
 ```
 
 ---
@@ -64,4 +63,4 @@ El frontend está desarrollado con tecnologías web estándar (**HTML5**, **CSS3
 - Carrusel dinámico en el Home.
 - Control de visibilidad en el formulario de inicio de sesión.
 
-Para previsualizarlo, basta con abrir `club-robotica_front/club-robotica/index.html` en cualquier navegador web o usar una extensión de servidor local como *Live Server*.
+Para previsualizarlo, basta con abrir `club-robotica_front/index.html` en cualquier navegador web o usar una extensión de servidor local como *Live Server*.
