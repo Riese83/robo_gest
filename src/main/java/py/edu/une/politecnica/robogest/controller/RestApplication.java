@@ -12,7 +12,9 @@ public class RestApplication extends ResourceConfig {
     public RestApplication() {
         packages("py.edu.une.politecnica.robogest.controller");
         register(ObjectMapperContextResolver.class);
+        register(CorsFilter.class);
         register(GlobalExceptionMapper.class);
+        register(RootController.class);
         register(AuthController.class);
         register(AsistenciaController.class);
         register(PrestamoController.class);

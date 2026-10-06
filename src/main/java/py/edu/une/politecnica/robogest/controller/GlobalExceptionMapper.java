@@ -1,5 +1,6 @@
 package py.edu.une.politecnica.robogest.controller;
 
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -31,11 +32,16 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
                 ? uriInfo.getRequestUri().getPath()
                 : "/api";
 
-        Response.Status status;
+        Response.StatusType status;
         String errorName;
         String message = exception.getMessage() != null ? exception.getMessage() : "Error interno del servidor";
 
-        if (exception instanceof CredencialesInvalidasException) {
+        if (exception instanceof WebApplicationException wae) {
+            Response response = wae.getResponse();
+            status = response != null ? response.getStatusInfo() : Response.Status.INTERNAL_SERVER_ERROR;
+            errorName = status.getReasonPhrase();
+            message = (wae.getMessage() != null && !wae.getMessage().isBlank()) ? wae.getMessage() : status.getReasonPhrase();
+        } else if (exception instanceof CredencialesInvalidasException) {
             status = Response.Status.UNAUTHORIZED;
             errorName = "Unauthorized";
         } else if (exception instanceof IntegranteInactivoException) {
@@ -59,7 +65,10 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
         } else {
             status = Response.Status.INTERNAL_SERVER_ERROR;
             errorName = "Internal Server Error";
-            message = "Ocurrio un error inesperado al procesar la solicitud";
+            message = (exception.getMessage() != null && !exception.getMessage().isBlank())
+                    ? exception.getMessage()
+                    : "Ocurrio un error inesperado al procesar la solicitud";
+            exception.printStackTrace();
         }
 
         ErrorResponseDTO errorDTO = new ErrorResponseDTO(status.getStatusCode(), errorName, message, path);

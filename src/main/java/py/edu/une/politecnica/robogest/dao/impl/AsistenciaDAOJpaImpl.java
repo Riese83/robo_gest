@@ -27,7 +27,7 @@ public class AsistenciaDAOJpaImpl extends GenericDAOJpaImpl<Asistencia, Long> im
     @Override
     public List<Asistencia> findByIntegranteId(Long integranteId) {
         String jpql = "SELECT a FROM Asistencia a WHERE a.integrante.id = :integranteId ORDER BY a.fechaHora DESC";
-        TypedQuery<Asistencia> query = em.createQuery(jpql, Asistencia.class);
+        TypedQuery<Asistencia> query = getEntityManager().createQuery(jpql, Asistencia.class);
         query.setParameter("integranteId", integranteId);
         return query.getResultList();
     }
@@ -35,7 +35,7 @@ public class AsistenciaDAOJpaImpl extends GenericDAOJpaImpl<Asistencia, Long> im
     @Override
     public List<Asistencia> findBetweenDates(LocalDateTime start, LocalDateTime end) {
         String jpql = "SELECT a FROM Asistencia a WHERE a.fechaHora BETWEEN :start AND :end ORDER BY a.fechaHora ASC";
-        TypedQuery<Asistencia> query = em.createQuery(jpql, Asistencia.class);
+        TypedQuery<Asistencia> query = getEntityManager().createQuery(jpql, Asistencia.class);
         query.setParameter("start", start);
         query.setParameter("end", end);
         return query.getResultList();
@@ -50,7 +50,7 @@ public class AsistenciaDAOJpaImpl extends GenericDAOJpaImpl<Asistencia, Long> im
                       "WHERE a.integrante.id = :integranteId " +
                       "  AND a.fechaHora BETWEEN :startOfDay AND :endOfDay " +
                       "ORDER BY a.fechaHora DESC";
-        TypedQuery<Asistencia> query = em.createQuery(jpql, Asistencia.class);
+        TypedQuery<Asistencia> query = getEntityManager().createQuery(jpql, Asistencia.class);
         query.setParameter("integranteId", integranteId);
         query.setParameter("startOfDay", startOfDay);
         query.setParameter("endOfDay", endOfDay);

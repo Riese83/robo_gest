@@ -3,6 +3,7 @@ package py.edu.une.politecnica.robogest.dao.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import py.edu.une.politecnica.robogest.dao.GenericDAO;
+import py.edu.une.politecnica.robogest.util.JpaUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 /**
  * Implementacion base generica de GenericDAO utilizando JPA (Jakarta Persistence).
+ * Utiliza getEntityManager() dinamicamente para garantizar compatibilidad con ThreadLocal.
  *
  * @param <T>  Tipo de la entidad
  * @param <ID> Tipo del identificador
@@ -29,7 +31,10 @@ public abstract class GenericDAOJpaImpl<T, ID> implements GenericDAO<T, ID> {
     }
 
     public EntityManager getEntityManager() {
-        return em;
+        if (this.em != null) {
+            return this.em;
+        }
+        return JpaUtil.getEntityManager();
     }
 
     public void setEntityManager(EntityManager em) {
@@ -41,36 +46,37 @@ public abstract class GenericDAOJpaImpl<T, ID> implements GenericDAO<T, ID> {
         if (id == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(em.find(entityClass, id));
+        return Optional.ofNullable(getEntityManager().find(entityClass, id));
     }
 
     @Override
     public List<T> findAll() {
         String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
-        TypedQuery<T> query = em.createQuery(jpql, entityClass);
+        TypedQuery<T> query = getEntityManager().createQuery(jpql, entityClass);
         return query.getResultList();
     }
 
     @Override
     public T save(T entity) {
         Objects.requireNonNull(entity, "La entidad a persistir no puede ser null");
-        em.persist(entity);
+        getEntityManager().persist(entity);
         return entity;
     }
 
     @Override
     public T update(T entity) {
         Objects.requireNonNull(entity, "La entidad a actualizar no puede ser null");
-        return em.merge(entity);
+        return getEntityManager().merge(entity);
     }
 
     @Override
     public void delete(T entity) {
         Objects.requireNonNull(entity, "La entidad a eliminar no puede ser null");
-        if (em.contains(entity)) {
-            em.remove(entity);
+        EntityManager currentEm = getEntityManager();
+        if (currentEm.contains(entity)) {
+            currentEm.remove(entity);
         } else {
-            em.remove(em.merge(entity));
+            currentEm.remove(currentEm.merge(entity));
         }
     }
 
@@ -90,7 +96,7 @@ public abstract class GenericDAOJpaImpl<T, ID> implements GenericDAO<T, ID> {
     @Override
     public long count() {
         String jpql = "SELECT COUNT(e) FROM " + entityClass.getSimpleName() + " e";
-        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+        TypedQuery<Long> query = getEntityManager().createQuery(jpql, Long.class);
         return query.getSingleResult();
     }
 }

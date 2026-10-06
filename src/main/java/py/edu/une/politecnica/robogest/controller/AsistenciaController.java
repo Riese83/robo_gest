@@ -32,8 +32,8 @@ public class AsistenciaController {
      */
     public AsistenciaController() {
         this.asistenciaService = new AsistenciaServiceImpl(
-                new IntegranteDAOJpaImpl(JpaUtil.getEntityManager()),
-                new AsistenciaDAOJpaImpl(JpaUtil.getEntityManager())
+                new IntegranteDAOJpaImpl(),
+                new AsistenciaDAOJpaImpl()
         );
     }
 

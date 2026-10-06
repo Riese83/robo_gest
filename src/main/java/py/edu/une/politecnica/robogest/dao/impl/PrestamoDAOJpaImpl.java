@@ -25,7 +25,7 @@ public class PrestamoDAOJpaImpl extends GenericDAOJpaImpl<Prestamo, Long> implem
     @Override
     public List<Prestamo> findByIntegranteId(Long integranteId) {
         String jpql = "SELECT p FROM Prestamo p WHERE p.integrante.id = :integranteId ORDER BY p.fechaSolicitud DESC";
-        TypedQuery<Prestamo> query = em.createQuery(jpql, Prestamo.class);
+        TypedQuery<Prestamo> query = getEntityManager().createQuery(jpql, Prestamo.class);
         query.setParameter("integranteId", integranteId);
         return query.getResultList();
     }
@@ -33,7 +33,7 @@ public class PrestamoDAOJpaImpl extends GenericDAOJpaImpl<Prestamo, Long> implem
     @Override
     public List<Prestamo> findByProyectoId(Long proyectoId) {
         String jpql = "SELECT p FROM Prestamo p WHERE p.proyecto.id = :proyectoId ORDER BY p.fechaSolicitud DESC";
-        TypedQuery<Prestamo> query = em.createQuery(jpql, Prestamo.class);
+        TypedQuery<Prestamo> query = getEntityManager().createQuery(jpql, Prestamo.class);
         query.setParameter("proyectoId", proyectoId);
         return query.getResultList();
     }
@@ -41,7 +41,7 @@ public class PrestamoDAOJpaImpl extends GenericDAOJpaImpl<Prestamo, Long> implem
     @Override
     public List<Prestamo> findByEstado(EstadoPrestamoEnum estado) {
         String jpql = "SELECT p FROM Prestamo p WHERE p.estado = :estado ORDER BY p.fechaSolicitud DESC";
-        TypedQuery<Prestamo> query = em.createQuery(jpql, Prestamo.class);
+        TypedQuery<Prestamo> query = getEntityManager().createQuery(jpql, Prestamo.class);
         query.setParameter("estado", estado);
         return query.getResultList();
     }
@@ -53,7 +53,7 @@ public class PrestamoDAOJpaImpl extends GenericDAOJpaImpl<Prestamo, Long> implem
                       "  AND p.fechaDevolucionReal IS NULL " +
                       "  AND p.fechaDevolucionPrevista < :now " +
                       "ORDER BY p.fechaDevolucionPrevista ASC";
-        TypedQuery<Prestamo> query = em.createQuery(jpql, Prestamo.class);
+        TypedQuery<Prestamo> query = getEntityManager().createQuery(jpql, Prestamo.class);
         query.setParameter("estado", EstadoPrestamoEnum.ENTREGADO);
         query.setParameter("now", LocalDateTime.now());
         return query.getResultList();

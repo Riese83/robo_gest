@@ -95,4 +95,15 @@ class GlobalExceptionMapperTest {
         assertEquals(500, dto.getStatus());
         assertEquals("Internal Server Error", dto.getError());
     }
+
+    @Test
+    @DisplayName("WebApplicationException (NotFoundException) debe conservar HTTP 404 Not Found")
+    void testWebApplicationException() {
+        Response response = mapper.toResponse(new jakarta.ws.rs.NotFoundException("Recurso no encontrado"));
+        assertEquals(404, response.getStatus());
+
+        ErrorResponseDTO dto = (ErrorResponseDTO) response.getEntity();
+        assertEquals(404, dto.getStatus());
+        assertEquals("Not Found", dto.getError());
+    }
 }

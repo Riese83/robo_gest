@@ -37,9 +37,9 @@ public class PrestamoController {
     public PrestamoController() {
         this.jwtTokenProvider = new JwtTokenProvider();
         this.prestamoService = new PrestamoServiceImpl(
-                new PrestamoDAOJpaImpl(JpaUtil.getEntityManager()),
-                new MaterialDAOJpaImpl(JpaUtil.getEntityManager()),
-                new DetallePrestamoDAOJpaImpl(JpaUtil.getEntityManager())
+                new PrestamoDAOJpaImpl(),
+                new MaterialDAOJpaImpl(),
+                new DetallePrestamoDAOJpaImpl()
         );
     }
 

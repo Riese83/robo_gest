@@ -23,22 +23,18 @@ public class MaterialDAOJpaImpl extends GenericDAOJpaImpl<Material, Long> implem
         super(Material.class, em);
     }
 
-    /**
-     * Implementacion critica: Aplica LockModeType.PESSIMISTIC_WRITE para garantizar
-     * atomicidad y consistencia ante lecturas/escrituras concurrentes sobre el inventario.
-     */
     @Override
     public Optional<Material> findByIdWithLock(Long id) {
         if (id == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(em.find(Material.class, id, LockModeType.PESSIMISTIC_WRITE));
+        return Optional.ofNullable(getEntityManager().find(Material.class, id, LockModeType.PESSIMISTIC_WRITE));
     }
 
     @Override
     public List<Material> findByCategoriaId(Long categoriaId) {
         String jpql = "SELECT m FROM Material m WHERE m.categoria.id = :categoriaId ORDER BY m.nombre ASC";
-        TypedQuery<Material> query = em.createQuery(jpql, Material.class);
+        TypedQuery<Material> query = getEntityManager().createQuery(jpql, Material.class);
         query.setParameter("categoriaId", categoriaId);
         return query.getResultList();
     }
@@ -46,7 +42,7 @@ public class MaterialDAOJpaImpl extends GenericDAOJpaImpl<Material, Long> implem
     @Override
     public List<Material> findByEstado(EstadoMaterialEnum estado) {
         String jpql = "SELECT m FROM Material m WHERE m.estado = :estado ORDER BY m.nombre ASC";
-        TypedQuery<Material> query = em.createQuery(jpql, Material.class);
+        TypedQuery<Material> query = getEntityManager().createQuery(jpql, Material.class);
         query.setParameter("estado", estado);
         return query.getResultList();
     }
@@ -54,7 +50,7 @@ public class MaterialDAOJpaImpl extends GenericDAOJpaImpl<Material, Long> implem
     @Override
     public List<Material> findByNombreContaining(String nombre) {
         String jpql = "SELECT m FROM Material m WHERE LOWER(m.nombre) LIKE LOWER(:nombre) ORDER BY m.nombre ASC";
-        TypedQuery<Material> query = em.createQuery(jpql, Material.class);
+        TypedQuery<Material> query = getEntityManager().createQuery(jpql, Material.class);
         query.setParameter("nombre", "%" + nombre + "%");
         return query.getResultList();
     }

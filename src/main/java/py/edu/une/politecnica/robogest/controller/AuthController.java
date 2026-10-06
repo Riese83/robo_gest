@@ -34,7 +34,7 @@ public class AuthController {
     public AuthController() {
         this.jwtTokenProvider = new JwtTokenProvider();
         this.authService = new AuthServiceImpl(
-                new IntegranteDAOJpaImpl(JpaUtil.getEntityManager()),
+                new IntegranteDAOJpaImpl(),
                 this.jwtTokenProvider
         );
     }
