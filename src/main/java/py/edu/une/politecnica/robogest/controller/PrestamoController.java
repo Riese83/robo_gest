@@ -3,6 +3,7 @@ package py.edu.une.politecnica.robogest.controller;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import py.edu.une.politecnica.robogest.dao.PrestamoDAO;
 import py.edu.une.politecnica.robogest.dao.impl.DetallePrestamoDAOJpaImpl;
 import py.edu.une.politecnica.robogest.dao.impl.MaterialDAOJpaImpl;
 import py.edu.une.politecnica.robogest.dao.impl.PrestamoDAOJpaImpl;
@@ -15,6 +16,7 @@ import py.edu.une.politecnica.robogest.service.impl.PrestamoServiceImpl;
 import py.edu.une.politecnica.robogest.util.JpaUtil;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,14 +32,16 @@ public class PrestamoController {
 
     private final PrestamoService prestamoService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PrestamoDAO prestamoDAO;
 
     /**
      * Constructor por defecto para el contenedor JAX-RS / Servlets.
      */
     public PrestamoController() {
         this.jwtTokenProvider = new JwtTokenProvider();
+        this.prestamoDAO = new PrestamoDAOJpaImpl();
         this.prestamoService = new PrestamoServiceImpl(
-                new PrestamoDAOJpaImpl(),
+                this.prestamoDAO,
                 new MaterialDAOJpaImpl(),
                 new DetallePrestamoDAOJpaImpl()
         );
@@ -49,6 +53,23 @@ public class PrestamoController {
     public PrestamoController(PrestamoService prestamoService, JwtTokenProvider jwtTokenProvider) {
         this.prestamoService = Objects.requireNonNull(prestamoService, "prestamoService no puede ser null");
         this.jwtTokenProvider = Objects.requireNonNull(jwtTokenProvider, "jwtTokenProvider no puede ser null");
+        this.prestamoDAO = new PrestamoDAOJpaImpl();
+    }
+
+    public PrestamoController(PrestamoService prestamoService, JwtTokenProvider jwtTokenProvider, PrestamoDAO prestamoDAO) {
+        this.prestamoService = Objects.requireNonNull(prestamoService, "prestamoService no puede ser null");
+        this.jwtTokenProvider = Objects.requireNonNull(jwtTokenProvider, "jwtTokenProvider no puede ser null");
+        this.prestamoDAO = Objects.requireNonNull(prestamoDAO, "prestamoDAO no puede ser null");
+    }
+
+    @GET
+    public Response listarPrestamos(@HeaderParam("Authorization") String authHeader) {
+        validarToken(authHeader);
+        List<Prestamo> prestamos = prestamoDAO.findAll();
+        List<PrestamoResponseDTO> dtos = prestamos.stream()
+                .map(PrestamoResponseDTO::fromEntity)
+                .toList();
+        return Response.ok(dtos).build();
     }
 
     /**
@@ -89,17 +110,19 @@ public class PrestamoController {
     /**
      * Simula la interceptacion de seguridad validando el token JWT y los roles autorizados.
      */
-    private void validarAutorizacion(String authHeader) {
+    private void validarToken(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new SecurityException("Cabecera Authorization ausente o invalida. Se requiere token 'Bearer <JWT>'");
         }
-
         String token = authHeader.substring(7).trim();
-
         if (!jwtTokenProvider.validateToken(token)) {
             throw new SecurityException("Token JWT invalido, alterado o expirado");
         }
+    }
 
+    private void validarAutorizacion(String authHeader) {
+        validarToken(authHeader);
+        String token = authHeader.substring(7).trim();
         String rol = jwtTokenProvider.getRolFromToken(token);
         if (rol == null || !ROLES_AUTORIZADOS.contains(rol.toUpperCase())) {
             throw new SecurityException(String.format(

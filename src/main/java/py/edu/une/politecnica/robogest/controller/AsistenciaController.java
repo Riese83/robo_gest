@@ -1,11 +1,13 @@
 package py.edu.une.politecnica.robogest.controller;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import py.edu.une.politecnica.robogest.dao.AsistenciaDAO;
 import py.edu.une.politecnica.robogest.dao.impl.AsistenciaDAOJpaImpl;
 import py.edu.une.politecnica.robogest.dao.impl.IntegranteDAOJpaImpl;
 import py.edu.une.politecnica.robogest.dto.MarcacionRequestDTO;
@@ -15,6 +17,7 @@ import py.edu.une.politecnica.robogest.service.AsistenciaService;
 import py.edu.une.politecnica.robogest.service.impl.AsistenciaServiceImpl;
 import py.edu.une.politecnica.robogest.util.JpaUtil;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -26,14 +29,16 @@ import java.util.Objects;
 public class AsistenciaController {
 
     private final AsistenciaService asistenciaService;
+    private final AsistenciaDAO asistenciaDAO;
 
     /**
      * Constructor por defecto para el contenedor JAX-RS / Servlets.
      */
     public AsistenciaController() {
+        this.asistenciaDAO = new AsistenciaDAOJpaImpl();
         this.asistenciaService = new AsistenciaServiceImpl(
                 new IntegranteDAOJpaImpl(),
-                new AsistenciaDAOJpaImpl()
+                this.asistenciaDAO
         );
     }
 
@@ -42,6 +47,21 @@ public class AsistenciaController {
      */
     public AsistenciaController(AsistenciaService asistenciaService) {
         this.asistenciaService = Objects.requireNonNull(asistenciaService, "asistenciaService no puede ser null");
+        this.asistenciaDAO = new AsistenciaDAOJpaImpl();
+    }
+
+    public AsistenciaController(AsistenciaService asistenciaService, AsistenciaDAO asistenciaDAO) {
+        this.asistenciaService = Objects.requireNonNull(asistenciaService, "asistenciaService no puede ser null");
+        this.asistenciaDAO = Objects.requireNonNull(asistenciaDAO, "asistenciaDAO no puede ser null");
+    }
+
+    @GET
+    public Response listarMarcaciones() {
+        List<Asistencia> asistencias = asistenciaDAO.findAll();
+        List<MarcacionResponseDTO> dtos = asistencias.stream()
+                .map(MarcacionResponseDTO::fromEntity)
+                .toList();
+        return Response.ok(dtos).build();
     }
 
     /**

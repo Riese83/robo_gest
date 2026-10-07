@@ -18,5 +18,7 @@ public class RestApplication extends ResourceConfig {
         register(AuthController.class);
         register(AsistenciaController.class);
         register(PrestamoController.class);
+        register(MaterialController.class);
+        register(IntegranteController.class);
     }
 }

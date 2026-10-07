@@ -39,6 +39,22 @@ public class MarcacionResponseDTO implements Serializable {
         this.mensaje = mensaje;
     }
 
+    public static MarcacionResponseDTO fromEntity(py.edu.une.politecnica.robogest.entity.Asistencia a) {
+        if (a == null) return null;
+        MarcacionResponseDTO dto = new MarcacionResponseDTO();
+        dto.setAsistenciaId(a.getId());
+        if (a.getIntegrante() != null) {
+            dto.setIntegranteId(a.getIntegrante().getId());
+            dto.setNombreIntegrante(a.getIntegrante().getNombre() + " " + a.getIntegrante().getApellido());
+            dto.setCarnetUniversitario(a.getIntegrante().getCarnetUniversitario());
+        }
+        dto.setTipoMarcacion(a.getTipoMarcacion() != null ? a.getTipoMarcacion().name() : "ENTRADA");
+        dto.setFechaHora(a.getFechaHora());
+        dto.setDispositivo(a.getDispositivoUtilizado());
+        dto.setMensaje("Marcacion registrada");
+        return dto;
+    }
+
     public Long getAsistenciaId() {
         return asistenciaId;
     }

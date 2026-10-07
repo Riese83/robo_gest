@@ -1,5 +1,5 @@
 /**
- * dashboard.js - Lógica interactiva para el Panel de Control Privado de Robo_Gest
+ * dashboard.js - Lógica SPA Interactiva y Conexión End-to-End con la API REST
  * Club de Robótica - FP-UNE
  */
 
@@ -21,25 +21,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     const userEmail = (currentUser && currentUser.email) || (claims && claims.sub) || '';
     const userCi = (currentUser && currentUser.ci) || (claims && claims.ci) || '';
 
-    // Estado global de préstamos
-    let prestamosData = [];
+    // Caché en memoria
+    let cachePrestamos = [];
+    let cacheMateriales = [];
+    let cacheIntegrantes = [];
+    let cacheAsistencias = [];
     let prestamoSeleccionadoId = null;
 
     // Inicializar Componentes de UI
     initUserInfoUI();
     initRoleAccessControl();
     initSidebarToggle();
+    initSpaNavigation();
     initLogoutHandlers();
     initRfidSimulator();
+    initSearchFilters();
 
-    // 3. Petición GET inicial para verificar la API y cargar datos con el wrapper JWT
-    await executeInitialGetAndLoadData();
+    // Cargar datos iniciales del Dashboard
+    await cargarDatosIniciales();
 
     /**
      * Renderiza los datos del usuario en la barra de navegación, sidebar y banner.
      */
     function initUserInfoUI() {
-        // Iniciales para el avatar
         const initials = userName
             .split(' ')
             .filter(Boolean)
@@ -48,7 +52,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             .join('')
             .toUpperCase() || 'U';
 
-        // Elementos de la interfaz
         const sidebarAvatar = document.getElementById('sidebarAvatar');
         const topbarAvatar = document.getElementById('topbarAvatar');
         const sidebarUserName = document.getElementById('sidebarUserName');
@@ -63,15 +66,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (welcomeUserName) welcomeUserName.textContent = userName;
         if (dropdownUserEmail) dropdownUserEmail.textContent = userEmail || `CI: ${userCi}`;
 
-        // Badges con estilo según el rol
         applyRoleBadge('sidebarUserRoleBadge', userRole);
         applyRoleBadge('topbarUserRoleBadge', userRole);
         applyRoleBadge('welcomeRoleBadge', userRole);
 
-        const adminRoleName = document.getElementById('adminDirectivaRoleName');
-        if (adminRoleName) adminRoleName.textContent = userRole;
-
-        // Fecha actual en español
         const currentDateElem = document.getElementById('currentDateDisplay');
         if (currentDateElem) {
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -79,32 +77,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    /**
-     * Aplica estilos visuales y texto a los badges de rol.
-     */
     function applyRoleBadge(elemId, role) {
         const badge = document.getElementById(elemId);
         if (!badge) return;
-
         badge.textContent = role;
         badge.className = 'badge';
-
-        if (role === 'ADMIN') {
-            badge.classList.add('badge-role-ADMIN');
-        } else if (role === 'DIRECTIVA') {
-            badge.classList.add('badge-role-DIRECTIVA');
-        } else {
-            badge.classList.add('badge-role-MIEMBRO');
-        }
+        if (role === 'ADMIN') badge.classList.add('badge-role-ADMIN');
+        else if (role === 'DIRECTIVA') badge.classList.add('badge-role-DIRECTIVA');
+        else badge.classList.add('badge-role-MIEMBRO');
     }
 
     /**
-     * REGLA DE NEGOCIO CRÍTICA: Control de acceso por rol en el Frontend.
-     * Renderiza u oculta elementos del menú y botones basándose en el rol extraído del JWT.
+     * Control de acceso basado en roles (RBAC).
      */
     function initRoleAccessControl() {
         const restrictedElements = document.querySelectorAll('.role-restricted, [data-allowed-roles]');
-
         restrictedElements.forEach(el => {
             const allowedAttr = el.getAttribute('data-allowed-roles');
             if (!allowedAttr) return;
@@ -113,22 +100,91 @@ document.addEventListener('DOMContentLoaded', async function () {
             const hasAccess = allowedRoles.includes(userRole);
 
             if (!hasAccess) {
-                // Si el usuario no tiene el rol permitido, ocultamos el elemento completamente
                 el.style.display = 'none';
             } else {
-                // Si tiene el rol y es un elemento de lista o bloque, asegurar visualización adecuada
                 el.style.removeProperty('display');
             }
         });
     }
 
     /**
-     * Inicializa el comportamiento responsivo del Sidebar.
+     * Sistema de Navegación SPA: Alterna entre vistas sin recargar la página.
      */
+    function initSpaNavigation() {
+        const navItems = document.querySelectorAll('.sidebar-nav-item, [data-view]');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetViewId = this.getAttribute('data-view');
+                if (!targetViewId) return;
+
+                switchView(targetViewId);
+
+                // En pantallas móviles, cerrar el sidebar tras seleccionar
+                const wrapper = document.getElementById('wrapper');
+                if (window.innerWidth < 992 && wrapper && wrapper.classList.contains('toggled')) {
+                    wrapper.classList.remove('toggled');
+                }
+            });
+        });
+    }
+
+    function switchView(viewId) {
+        const views = document.querySelectorAll('.spa-view');
+        let viewFound = false;
+
+        views.forEach(v => {
+            if (v.id === viewId) {
+                v.classList.add('active-view');
+                viewFound = true;
+            } else {
+                v.classList.remove('active-view');
+            }
+        });
+
+        if (!viewFound) return;
+
+        // Actualizar active class en links del sidebar
+        const sidebarLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute('data-view') === viewId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+        // Actualizar título en topbar
+        const titles = {
+            'view-dashboard': 'Panel de Control',
+            'view-prestamos': 'Gestión de Préstamos',
+            'view-aprobar-prestamos': 'Aprobación de Préstamos (Directiva)',
+            'view-inventario': 'Inventario de Materiales',
+            'view-asistencia': 'Control de Asistencias IoT',
+            'view-integrantes': 'Padrón de Integrantes'
+        };
+
+        const pageTitle = document.getElementById('pageTitleHeader');
+        if (pageTitle && titles[viewId]) {
+            pageTitle.textContent = titles[viewId];
+        }
+
+        // Carga bajo demanda al cambiar de pestaña
+        if (viewId === 'view-prestamos' || viewId === 'view-aprobar-prestamos') {
+            cargarPrestamos();
+        } else if (viewId === 'view-inventario') {
+            cargarInventario();
+        } else if (viewId === 'view-asistencia') {
+            cargarAsistencias();
+        } else if (viewId === 'view-integrantes') {
+            cargarIntegrantes();
+        }
+    }
+
     function initSidebarToggle() {
         const wrapper = document.getElementById('wrapper');
         const toggleBtn = document.getElementById('sidebarToggle');
-
         if (toggleBtn && wrapper) {
             toggleBtn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -137,357 +193,365 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    /**
-     * Vincula los botones de cierre de sesión al método Auth.logout().
-     */
     function initLogoutHandlers() {
-        const btnTopbarLogout = document.getElementById('btnTopbarLogout');
-        const btnSidebarLogout = document.getElementById('btnSidebarLogout');
-
         const handleLogout = (e) => {
             e.preventDefault();
-            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            if (confirm('¿Deseas cerrar tu sesión?')) {
                 window.Auth.logout();
             }
         };
 
+        const btnTopbarLogout = document.getElementById('btnTopbarLogout');
+        const btnSidebarLogout = document.getElementById('btnSidebarLogout');
         if (btnTopbarLogout) btnTopbarLogout.addEventListener('click', handleLogout);
         if (btnSidebarLogout) btnSidebarLogout.addEventListener('click', handleLogout);
     }
 
     /**
-     * Realiza una petición GET inicial al backend con el envoltorio fetch y el JWT
-     * para verificar la conectividad de la API y renderizar la vista de préstamos.
+     * Carga inicial consolidada de datos reales desde el backend.
      */
-    async function executeInitialGetAndLoadData() {
+    async function cargarDatosIniciales() {
         try {
-            console.log('[Dashboard] Ejecutando petición GET inicial utilizando authFetch con JWT...');
-
-            // Petición GET al endpoint raíz de la API para certificar el estado y los claims
-            const apiInfoResponse = await window.Auth.authFetch('/', { method: 'GET' });
-
-            if (apiInfoResponse.ok) {
-                const apiInfo = await apiInfoResponse.json();
-                console.log('[Dashboard] API conectada exitosamente:', apiInfo);
-            }
-
-            // Simulación / Carga estructurada de préstamos activos consumiendo los datos
-            await loadLoansSummary();
-
-        } catch (error) {
-            console.error('[Dashboard] Error en petición inicial:', error);
-            showNotification('No se pudo sincronizar con el servidor REST. Verifique que Apache Tomcat esté en ejecución.', 'danger');
-            renderLoansError('Error de conexión con el backend.');
+            await Promise.allSettled([
+                cargarPrestamos(),
+                cargarInventario(),
+                cargarAsistencias(),
+                (userRole === 'ADMIN' ? cargarIntegrantes() : Promise.resolve())
+            ]);
+            actualizarKpis();
+        } catch (err) {
+            console.error('[Dashboard] Error al cargar datos iniciales:', err);
         }
     }
 
-    /**
-     * Carga y renderiza el resumen de préstamos activos.
-     */
-    async function loadLoansSummary() {
-        const tbody = document.getElementById('loansTableBody');
-        const loansCountBadge = document.getElementById('loansCountBadge');
-
-        // Datos de muestra con la estructura exacta de nuestro esquema y DTOs
-        prestamosData = [
-            {
-                id: 101,
-                integranteNombre: "Lucas Benítez",
-                integranteCarrera: "INGENIERIA_DE_SISTEMAS",
-                proyectoNombre: "Brazo Robótico Autónomo",
-                materialNombre: "Arduino Mega 2560 R3",
-                cantidad: 2,
-                fechaPrevista: "2026-10-15",
-                estado: "PENDIENTE"
-            },
-            {
-                id: 102,
-                integranteNombre: "María Almada",
-                integranteCarrera: "INGENIERIA_ELECTRICA",
-                proyectoNombre: "Vehículo Seguidor de Línea",
-                materialNombre: "Sensor Ultrasonido HC-SR04",
-                cantidad: 4,
-                fechaPrevista: "2026-10-12",
-                estado: "PENDIENTE"
-            },
-            {
-                id: 103,
-                integranteNombre: "Carlos Villalba",
-                integranteCarrera: "ANALISIS_DE_SISTEMAS",
-                proyectoNombre: "Drone de Reconocimiento",
-                materialNombre: "Batería LiPo 3S 2200mAh",
-                cantidad: 1,
-                fechaPrevista: "2026-10-20",
-                estado: "ENTREGADO"
-            },
-            {
-                id: 104,
-                integranteNombre: "Sofía Martínez",
-                integranteCarrera: "COLABORADOR",
-                proyectoNombre: "Estación Meteorológica IoT",
-                materialNombre: "Módulo ESP32 DevKit V1",
-                cantidad: 1,
-                fechaPrevista: "2026-10-18",
-                estado: "APROBADO"
-            }
-        ];
-
-        // Actualizar KPIs numéricos
-        const pendientesCount = prestamosData.filter(p => p.estado === 'PENDIENTE').length;
-        const activosCount = prestamosData.filter(p => p.estado === 'ENTREGADO' || p.estado === 'APROBADO').length;
-
+    function actualizarKpis() {
         const kpiPrestamos = document.getElementById('kpiPrestamosActivos');
         const kpiAsistencias = document.getElementById('kpiAsistenciasMes');
         const kpiStock = document.getElementById('kpiComponentesStock');
+        const kpiIntegrantes = document.getElementById('kpiTotalIntegrantes');
 
-        if (kpiPrestamos) kpiPrestamos.textContent = `${activosCount} (${pendientesCount} pend.)`;
-        if (kpiAsistencias) kpiAsistencias.textContent = '14 marcaciones';
-        if (kpiStock) kpiStock.textContent = '84 unidades';
+        if (kpiPrestamos) {
+            const pendientes = cachePrestamos.filter(p => p.estado === 'SOLICITADO').length;
+            kpiPrestamos.textContent = `${cachePrestamos.length} (${pendientes} pend.)`;
+        }
+
+        if (kpiAsistencias) {
+            kpiAsistencias.textContent = `${cacheAsistencias.length} registros`;
+        }
+
+        if (kpiStock) {
+            const totalStock = cacheMateriales.reduce((acc, m) => acc + (m.cantidadTotal || 0), 0);
+            kpiStock.textContent = `${totalStock} unidades`;
+        }
+
+        if (kpiIntegrantes) {
+            kpiIntegrantes.textContent = `${cacheIntegrantes.length || 3} miembros`;
+        }
 
         const pendingBadge = document.getElementById('pendingLoansBadge');
         if (pendingBadge) {
-            pendingBadge.textContent = pendientesCount;
-            pendingBadge.style.display = pendientesCount > 0 ? 'inline-block' : 'none';
+            const pend = cachePrestamos.filter(p => p.estado === 'SOLICITADO').length;
+            pendingBadge.textContent = pend;
+            pendingBadge.style.display = pend > 0 ? 'inline-block' : 'none';
         }
-
-        if (loansCountBadge) {
-            loansCountBadge.textContent = `${prestamosData.length} registros en total`;
-        }
-
-        renderLoansTable(prestamosData);
     }
 
-    /**
-     * Renderiza la tabla HTML de préstamos aplicando la regla de visibilidad de botones por rol.
-     */
-    function renderLoansTable(loans) {
-        const tbody = document.getElementById('loansTableBody');
+    // ========================================================
+    // 1. CARGA Y GESTIÓN DE PRÉSTAMOS
+    // ========================================================
+    async function cargarPrestamos() {
+        try {
+            const res = await window.Auth.authFetch('/prestamos', { method: 'GET' });
+            if (!res.ok) throw new Error('No se pudo obtener el listado de préstamos.');
+            cachePrestamos = await res.json();
+            renderTablaPrestamos(cachePrestamos);
+            renderTablaAprobaciones(cachePrestamos);
+            actualizarKpis();
+        } catch (err) {
+            console.error('[Dashboard] Error cargando préstamos:', err);
+            renderErrorEnTabla('tablaPrestamosCompleta', 7, 'Error al conectar con /api/prestamos.');
+            renderErrorEnTabla('tablaAprobarPrestamos', 7, 'Error al conectar con /api/prestamos.');
+        }
+    }
+
+    function renderTablaPrestamos(prestamos) {
+        const tbody = document.getElementById('tablaPrestamosCompleta');
         if (!tbody) return;
 
-        if (!loans || loans.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">
-                        No hay solicitudes de préstamos registradas.
-                    </td>
-                </tr>
-            `;
+        if (!prestamos || prestamos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No hay préstamos registrados en la base de datos.</td></tr>`;
             return;
         }
 
         const canApprove = window.Auth.hasAnyRole('ADMIN', 'DIRECTIVA');
 
-        tbody.innerHTML = loans.map(p => {
-            let statusBadgeClass = 'bg-secondary';
-            if (p.estado === 'PENDIENTE') statusBadgeClass = 'bg-warning text-dark';
-            else if (p.estado === 'APROBADO') statusBadgeClass = 'bg-info text-dark';
-            else if (p.estado === 'ENTREGADO') statusBadgeClass = 'bg-primary text-white';
-            else if (p.estado === 'DEVUELTO') statusBadgeClass = 'bg-success text-white';
+        tbody.innerHTML = prestamos.map(p => {
+            const badgeClass = getBadgeEstadoPrestamo(p.estado);
+            const materialesText = p.detalles && p.detalles.length > 0
+                ? p.detalles.map(d => `${escapeHtml(d.nombreMaterial)} (x${d.cantidad})`).join(', ')
+                : (p.descripcion || 'Sin detalle de materiales');
 
-            // REGLA CRÍTICA: Botón "Aprobar" solo visible para ADMIN / DIRECTIVA en préstamos PENDIENTES
-            let actionBtnHtml = '';
-            if (canApprove && p.estado === 'PENDIENTE') {
-                actionBtnHtml = `
-                    <button class="btn btn-sm btn-success fw-semibold btn-aprobar-prestamo" data-prestamo-id="${p.id}">
-                        <i class="bi bi-check-circle me-1"></i> Aprobar
-                    </button>
-                `;
-            } else if (p.estado === 'PENDIENTE') {
-                actionBtnHtml = `
-                    <span class="badge bg-light text-muted border">En Espera</span>
-                `;
+            let actionHtml = '';
+            if (canApprove && p.estado === 'SOLICITADO') {
+                actionHtml = `<button class="btn btn-sm btn-warning text-dark fw-semibold btn-modal-aprobar" data-id="${p.prestamoId}"><i class="bi bi-check-circle me-1"></i>Aprobar</button>`;
+            } else if (p.estado === 'SOLICITADO') {
+                actionHtml = `<span class="badge bg-light text-muted border">En Espera</span>`;
             } else {
-                actionBtnHtml = `
-                    <span class="badge bg-light text-secondary border">Procesado</span>
-                `;
+                actionHtml = `<span class="badge bg-light text-success border"><i class="bi bi-check2"></i> Procesado</span>`;
             }
 
             return `
-                <tr id="row-prestamo-${p.id}">
-                    <td class="ps-4 fw-bold text-primary">#${p.id}</td>
+                <tr id="row-prestamo-${p.prestamoId}">
+                    <td class="ps-4 fw-bold text-primary">#${p.prestamoId}</td>
                     <td>
-                        <span class="fw-semibold d-block">${escapeHtml(p.integranteNombre)}</span>
-                        <small class="text-muted" style="font-size:0.75rem;">${escapeHtml(p.integranteCarrera)}</small>
+                        <span class="fw-semibold d-block">${escapeHtml(p.nombreIntegrante || 'Miembro')}</span>
+                        <small class="text-muted">${escapeHtml(p.emailIntegrante || '')}</small>
                     </td>
-                    <td><span class="badge bg-light text-dark border">${escapeHtml(p.proyectoNombre)}</span></td>
-                    <td>
-                        <div class="fw-medium">${escapeHtml(p.materialNombre)}</div>
-                        <small class="text-muted">${p.cantidad} unidad(es)</small>
-                    </td>
-                    <td><small class="text-muted"><i class="bi bi-calendar-event me-1"></i>${p.fechaPrevista}</small></td>
-                    <td><span class="badge ${statusBadgeClass} py-1 px-2" id="badge-estado-${p.id}">${p.estado}</span></td>
-                    <td class="text-end pe-4" id="action-cell-${p.id}">
-                        ${actionBtnHtml}
+                    <td><span class="badge bg-light text-dark border">${escapeHtml(p.nombreProyecto || 'Préstamo General')}</span></td>
+                    <td><div class="small fw-medium">${materialesText}</div></td>
+                    <td><small class="text-muted"><i class="bi bi-calendar-event me-1"></i>${p.fechaDevolucionPrevista ? p.fechaDevolucionPrevista.substring(0, 10) : 'Pendiente'}</small></td>
+                    <td><span class="badge ${badgeClass} py-1 px-2">${p.estado}</span></td>
+                    <td class="text-end pe-4">${actionHtml}</td>
+                </tr>
+            `;
+        }).join('');
+
+        attachModalAprobarListeners();
+    }
+
+    function renderTablaAprobaciones(prestamos) {
+        const tbody = document.getElementById('tablaAprobarPrestamos');
+        if (!tbody) return;
+
+        const solicitados = prestamos.filter(p => p.estado === 'SOLICITADO');
+
+        if (solicitados.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-success"><i class="bi bi-check-circle me-1"></i> No hay solicitudes pendientes de aprobación en este momento.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = solicitados.map(p => {
+            const materialesText = p.detalles && p.detalles.length > 0
+                ? p.detalles.map(d => `<span class="badge bg-light text-dark border me-1">${escapeHtml(d.nombreMaterial)}: <strong>${d.cantidad}</strong></span>`).join(' ')
+                : escapeHtml(p.descripcion || 'Sin detalle');
+
+            return `
+                <tr>
+                    <td class="ps-4 fw-bold text-primary">#${p.prestamoId}</td>
+                    <td><span class="fw-semibold">${escapeHtml(p.nombreIntegrante)}</span></td>
+                    <td>${escapeHtml(p.nombreProyecto || 'N/A')}</td>
+                    <td>${materialesText}</td>
+                    <td><small class="text-muted">${p.fechaDevolucionPrevista ? p.fechaDevolucionPrevista.substring(0, 10) : 'A definir'}</small></td>
+                    <td><span class="badge bg-warning text-dark py-1 px-2">SOLICITADO</span></td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-success fw-semibold btn-modal-aprobar" data-id="${p.prestamoId}">
+                            <i class="bi bi-shield-check me-1"></i> Aprobar con Bloqueo Pesimista
+                        </button>
                     </td>
                 </tr>
             `;
         }).join('');
 
-        // Adjuntar eventos a los botones de aprobación
-        attachApproveButtonListeners();
+        attachModalAprobarListeners();
     }
 
-    /**
-     * Adjunta listeners a los botones "Aprobar" renderizados.
-     */
-    function attachApproveButtonListeners() {
-        const approveButtons = document.querySelectorAll('.btn-aprobar-prestamo');
-        const modalElement = document.getElementById('modalAprobarPrestamo');
-        const modalIdText = document.getElementById('modalPrestamoIdText');
-        const btnConfirmar = document.getElementById('btnConfirmarAprobacion');
+    function attachModalAprobarListeners() {
+        const buttons = document.querySelectorAll('.btn-modal-aprobar');
+        const modalEl = document.getElementById('modalAprobarPrestamo');
+        const modalText = document.getElementById('modalPrestamoIdText');
+        const btnConfirm = document.getElementById('btnConfirmarAprobacion');
 
-        if (!modalElement || !approveButtons.length) return;
+        if (!modalEl || !buttons.length) return;
+        const modalInstance = new bootstrap.Modal(modalEl);
 
-        const modalInstance = new bootstrap.Modal(modalElement);
-
-        approveButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                prestamoSeleccionadoId = this.getAttribute('data-prestamo-id');
-                if (modalIdText) modalIdText.textContent = `#${prestamoSeleccionadoId}`;
+        buttons.forEach(btn => {
+            btn.onclick = function () {
+                prestamoSeleccionadoId = this.getAttribute('data-id');
+                if (modalText) modalText.textContent = `#${prestamoSeleccionadoId}`;
                 modalInstance.show();
-            });
+            };
         });
 
-        // Evento de confirmación en el Modal
-        if (btnConfirmar) {
-            btnConfirmar.onclick = async function () {
+        if (btnConfirm) {
+            btnConfirm.onclick = async function () {
                 if (!prestamoSeleccionadoId) return;
 
-                btnConfirmar.disabled = true;
-                btnConfirmar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Aprobando...`;
+                btnConfirm.disabled = true;
+                btnConfirm.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Ejecutando Bloqueo...`;
 
                 try {
-                    await ejecutarAprobacionPrestamo(prestamoSeleccionadoId);
-                    modalInstance.hide();
+                    const res = await window.Auth.authFetch(`/prestamos/${prestamoSeleccionadoId}/aprobar`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            prestamoId: Number(prestamoSeleccionadoId),
+                            observacion: 'Aprobación autorizada desde el Panel Directivo'
+                        })
+                    });
+
+                    const data = await res.json().catch(() => null);
+
+                    if (!res.ok) {
+                        const errMsg = (data && data.message) ? data.message : 'Error al procesar la aprobación.';
+                        showNotification(errMsg, 'danger');
+                    } else {
+                        showNotification(`¡Préstamo #${prestamoSeleccionadoId} aprobado exitosamente con LockModeType.PESSIMISTIC_WRITE en MySQL!`, 'success');
+                        modalInstance.hide();
+                        await cargarPrestamos();
+                    }
+                } catch (e) {
+                    showNotification('Error de comunicación con el backend.', 'danger');
                 } finally {
-                    btnConfirmar.disabled = false;
-                    btnConfirmar.innerHTML = `<i class="bi bi-check-lg me-1"></i> Confirmar Aprobación`;
+                    btnConfirm.disabled = false;
+                    btnConfirm.innerHTML = `<i class="bi bi-check-lg me-1"></i> Aprobar Préstamo`;
                 }
             };
         }
     }
 
-    /**
-     * Invoca el endpoint protegido POST /api/prestamos/{id}/aprobar utilizando el JWT
-     */
-    async function ejecutarAprobacionPrestamo(id) {
+    function getBadgeEstadoPrestamo(estado) {
+        if (estado === 'SOLICITADO') return 'bg-warning text-dark';
+        if (estado === 'APROBADO') return 'bg-info text-dark';
+        if (estado === 'ENTREGADO') return 'bg-primary text-white';
+        if (estado === 'DEVUELTO') return 'bg-success text-white';
+        return 'bg-secondary text-white';
+    }
+
+    // ========================================================
+    // 2. CARGA DE INVENTARIO Y STOCK
+    // ========================================================
+    async function cargarInventario() {
         try {
-            console.log(`[Dashboard] Solicitando aprobación transaccional para préstamo ID ${id}...`);
-
-            const response = await window.Auth.authFetch(`/prestamos/${id}/aprobar`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    prestamoId: Number(id),
-                    observacion: 'Aprobación autorizada desde el Panel Web Frontend'
-                })
-            });
-
-            const data = await response.json().catch(() => null);
-
-            if (!response.ok) {
-                let errorMsg = 'Error al aprobar el préstamo.';
-                if (data && data.message) {
-                    errorMsg = data.message;
-                } else if (response.status === 409) {
-                    errorMsg = 'Stock insuficiente en los materiales para aprobar la solicitud.';
-                } else if (response.status === 403) {
-                    errorMsg = 'No posees permisos de ADMIN o DIRECTIVA para autorizar esta operación.';
-                }
-                showNotification(errorMsg, 'warning');
-                return;
-            }
-
-            // Actualización visual exitosa
-            showNotification(`¡Préstamo #${id} aprobado exitosamente con bloqueo pesimista de stock!`, 'success');
-
-            const badgeEstado = document.getElementById(`badge-estado-${id}`);
-            const cellAction = document.getElementById(`action-cell-${id}`);
-
-            if (badgeEstado) {
-                badgeEstado.className = 'badge bg-info text-dark py-1 px-2';
-                badgeEstado.textContent = 'APROBADO';
-            }
-
-            if (cellAction) {
-                cellAction.innerHTML = `<span class="badge bg-light text-success border"><i class="bi bi-check2"></i> Aprobado</span>`;
-            }
-
-            // Descontar del badge de pendientes
-            const pendingBadge = document.getElementById('pendingLoansBadge');
-            if (pendingBadge) {
-                const current = parseInt(pendingBadge.textContent, 10) || 1;
-                const nextVal = Math.max(0, current - 1);
-                pendingBadge.textContent = nextVal;
-                if (nextVal === 0) pendingBadge.style.display = 'none';
-            }
-
-        } catch (error) {
-            console.error('[Dashboard] Error al aprobar préstamo:', error);
-            showNotification('Error al comunicarse con el servidor REST.', 'danger');
+            const res = await window.Auth.authFetch('/materiales', { method: 'GET' });
+            if (!res.ok) throw new Error('Error al listar materiales.');
+            cacheMateriales = await res.json();
+            renderTablaInventario(cacheMateriales);
+            actualizarKpis();
+        } catch (err) {
+            console.error('[Dashboard] Error cargando inventario:', err);
+            renderErrorEnTabla('tablaInventario', 7, 'Error al conectar con /api/materiales.');
         }
     }
 
-    /**
-     * Inicializa el formulario interactivo para simular lecturas RFID del ESP32
-     */
+    function renderTablaInventario(materiales) {
+        const tbody = document.getElementById('tablaInventario');
+        if (!tbody) return;
+
+        if (!materiales || materiales.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No hay componentes en el inventario.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = materiales.map(m => `
+            <tr>
+                <td class="ps-4 fw-bold text-secondary">#${m.id}</td>
+                <td>
+                    <span class="fw-semibold text-dark">${escapeHtml(m.nombre)}</span>
+                    <small class="text-muted d-block" style="font-size:0.75rem;">${escapeHtml(m.descripcion || '')}</small>
+                </td>
+                <td><span class="badge bg-light text-dark border">${escapeHtml(m.categoriaNombre || 'General')}</span></td>
+                <td>${escapeHtml(m.marca || '-')} / ${escapeHtml(m.modelo || '-')}</td>
+                <td>
+                    <span class="badge ${m.cantidadTotal > 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger'} px-2 py-1 fs-6">
+                        ${m.cantidadTotal} un.
+                    </span>
+                </td>
+                <td><small class="text-muted"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(m.ubicacion || 'Laboratorio')}</small></td>
+                <td><span class="badge bg-success py-1 px-2">${m.estado}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    // ========================================================
+    // 3. CONTROL DE ASISTENCIA Y SIMULADOR RFID
+    // ========================================================
+    async function cargarAsistencias() {
+        try {
+            const res = await window.Auth.authFetch('/asistencia', { method: 'GET' });
+            if (!res.ok) throw new Error('Error al listar asistencias.');
+            cacheAsistencias = await res.json();
+            renderTablaAsistencias(cacheAsistencias);
+            actualizarKpis();
+        } catch (err) {
+            console.error('[Dashboard] Error cargando asistencias:', err);
+            renderErrorEnTabla('tablaAsistencias', 5, 'Error al conectar con /api/asistencia.');
+        }
+    }
+
+    function renderTablaAsistencias(asistencias) {
+        const tbody = document.getElementById('tablaAsistencias');
+        if (!tbody) return;
+
+        if (!asistencias || asistencias.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Aún no hay marcaciones registradas hoy. ¡Prueba el simulador arriba!</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = asistencias.map(a => {
+            const badgeClass = a.tipo === 'ENTRADA' ? 'bg-success' : 'bg-primary';
+            const horaFormateada = a.fechaHora ? new Date(a.fechaHora).toLocaleString('es-PY') : '-';
+
+            return `
+                <tr>
+                    <td class="ps-4 text-muted small">#${a.id}</td>
+                    <td><span class="fw-semibold">${escapeHtml(a.integranteNombre)}</span></td>
+                    <td><small class="text-muted"><i class="bi bi-clock me-1"></i>${horaFormateada}</small></td>
+                    <td><span class="badge ${badgeClass} py-1 px-2">${a.tipo}</span></td>
+                    <td><code class="text-secondary">${escapeHtml(a.dispositivo || 'ESP32')}</code></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
     function initRfidSimulator() {
         const form = document.getElementById('formMarcacionRfid');
-        const inputNfcUid = document.getElementById('inputNfcUid');
-        const inputDispositivo = document.getElementById('inputDispositivo');
-        const resultadoContainer = document.getElementById('resultadoMarcacion');
+        const inputNfc = document.getElementById('inputNfcUid');
+        const inputDisp = document.getElementById('inputDispositivo');
         const btnMarcar = document.getElementById('btnMarcarRfid');
+        const resultadoDiv = document.getElementById('resultadoMarcacion');
 
         if (!form) return;
 
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
-
-            const nfcUid = inputNfcUid ? inputNfcUid.value.trim() : '';
-            const dispositivo = inputDispositivo ? inputDispositivo.value.trim() : 'ESP32_LAB';
+            const nfcUid = inputNfc ? inputNfc.value.trim() : '';
+            const dispositivo = inputDisp ? inputDisp.value.trim() : 'ESP32_LAB';
 
             if (!nfcUid) {
-                alert('Ingrese el UID de la tarjeta.');
+                alert('Ingresa el UID de la tarjeta RFID.');
                 return;
             }
 
-            if (btnMarcar) {
-                btnMarcar.disabled = true;
-                btnMarcar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Enviando...`;
-            }
+            btnMarcar.disabled = true;
+            btnMarcar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Procesando lectura RFID...`;
 
             try {
-                const response = await window.Auth.authFetch('/asistencia/marcar', {
+                const res = await window.Auth.authFetch('/asistencia/marcar', {
                     method: 'POST',
-                    body: JSON.stringify({
-                        nfcUid: nfcUid,
-                        dispositivo: dispositivo
-                    })
+                    body: JSON.stringify({ nfcUid, dispositivo })
                 });
 
-                const data = await response.json().catch(() => null);
+                const data = await res.json().catch(() => null);
 
-                if (!response.ok) {
+                if (!res.ok) {
                     const msg = (data && data.message) ? data.message : 'Error al registrar marcación RFID.';
-                    renderRfidResult(false, msg, resultadoContainer);
+                    mostrarResultadoRfid(false, msg, resultadoDiv);
                 } else {
                     const tipo = data.tipo || 'ENTRADA';
                     const nombre = data.integranteNombre || 'Integrante';
                     const hora = data.fechaHora ? new Date(data.fechaHora).toLocaleTimeString() : new Date().toLocaleTimeString();
-                    const msg = `Marcación registrada: <strong>${tipo}</strong> para <strong>${escapeHtml(nombre)}</strong> a las ${hora}.`;
-                    renderRfidResult(true, msg, resultadoContainer);
+                    mostrarResultadoRfid(true, `¡Marcación de <strong>${tipo}</strong> exitosa para <strong>${escapeHtml(nombre)}</strong> a las ${hora}!`, resultadoDiv);
+                    await cargarAsistencias();
                 }
             } catch (err) {
-                renderRfidResult(false, 'No se pudo conectar con el endpoint /api/asistencia/marcar.', resultadoContainer);
+                mostrarResultadoRfid(false, 'No se pudo conectar con el endpoint /api/asistencia/marcar.', resultadoDiv);
             } finally {
-                if (btnMarcar) {
-                    btnMarcar.disabled = false;
-                    btnMarcar.innerHTML = `<i class="bi bi-send me-1"></i> Simular Marcación`;
-                }
+                btnMarcar.disabled = false;
+                btnMarcar.innerHTML = `<i class="bi bi-send me-1"></i> Enviar Marcación`;
             }
         });
     }
 
-    function renderRfidResult(isSuccess, message, container) {
+    function mostrarResultadoRfid(isSuccess, message, container) {
         if (!container) return;
         container.style.display = 'block';
         const alertClass = isSuccess ? 'alert-success' : 'alert-danger';
@@ -502,9 +566,107 @@ document.addEventListener('DOMContentLoaded', async function () {
         `;
     }
 
-    /**
-     * Muestra notificaciones flotantes en el contenedor superior.
-     */
+    // ========================================================
+    // 4. PADRÓN DE INTEGRANTES (SOLO ADMIN)
+    // ========================================================
+    async function cargarIntegrantes() {
+        if (userRole !== 'ADMIN') return;
+
+        try {
+            const res = await window.Auth.authFetch('/integrantes', { method: 'GET' });
+            if (!res.ok) throw new Error('Error al listar integrantes.');
+            cacheIntegrantes = await res.json();
+            renderTablaIntegrantes(cacheIntegrantes);
+            actualizarKpis();
+        } catch (err) {
+            console.error('[Dashboard] Error cargando integrantes:', err);
+            renderErrorEnTabla('tablaIntegrantes', 8, 'Error al conectar con /api/integrantes.');
+        }
+    }
+
+    function renderTablaIntegrantes(integrantes) {
+        const tbody = document.getElementById('tablaIntegrantes');
+        if (!tbody) return;
+
+        if (!integrantes || integrantes.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No hay integrantes registrados.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = integrantes.map(i => {
+            let roleBadge = 'bg-secondary';
+            if (i.rol === 'ADMIN') roleBadge = 'badge-role-ADMIN';
+            else if (i.rol === 'DIRECTIVA') roleBadge = 'badge-role-DIRECTIVA';
+            else roleBadge = 'badge-role-MIEMBRO';
+
+            return `
+                <tr>
+                    <td class="ps-4 fw-bold text-secondary">#${i.id}</td>
+                    <td>
+                        <span class="fw-semibold text-dark">${escapeHtml(i.nombreCompleto)}</span>
+                        <small class="text-muted d-block">${escapeHtml(i.email)}</small>
+                    </td>
+                    <td><code>${escapeHtml(i.ci)}</code></td>
+                    <td><small class="text-muted">${escapeHtml(i.carnetUniversitario || '-')}</small></td>
+                    <td><small class="badge bg-light text-dark border">${escapeHtml(i.carrera || '-')}</small></td>
+                    <td><span class="badge ${roleBadge} py-1 px-2">${i.rol}</span></td>
+                    <td><code class="text-primary">${escapeHtml(i.nfcUid || 'No asignado')}</code></td>
+                    <td><span class="badge bg-success py-1 px-2">${i.estado}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // ========================================================
+    // BÚSQUEDA Y FILTRADO EN TABLAS
+    // ========================================================
+    function initSearchFilters() {
+        const inputMat = document.getElementById('inputBuscarMaterial');
+        if (inputMat) {
+            inputMat.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const filtrados = cacheMateriales.filter(m =>
+                    m.nombre.toLowerCase().includes(term) ||
+                    (m.categoriaNombre && m.categoriaNombre.toLowerCase().includes(term))
+                );
+                renderTablaInventario(filtrados);
+            });
+        }
+
+        const inputInt = document.getElementById('inputBuscarIntegrante');
+        if (inputInt) {
+            inputInt.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const filtrados = cacheIntegrantes.filter(i =>
+                    i.nombreCompleto.toLowerCase().includes(term) ||
+                    i.ci.toLowerCase().includes(term) ||
+                    (i.carrera && i.carrera.toLowerCase().includes(term))
+                );
+                renderTablaIntegrantes(filtrados);
+            });
+        }
+
+        // Botones de recarga
+        const btnRecargarPrestamos = document.getElementById('btnRecargarPrestamos');
+        const btnRecargarAprobaciones = document.getElementById('btnRecargarAprobaciones');
+        const btnRecargarInventario = document.getElementById('btnRecargarInventario');
+        const btnRecargarAsistencias = document.getElementById('btnRecargarAsistencias');
+        const btnRecargarIntegrantes = document.getElementById('btnRecargarIntegrantes');
+
+        if (btnRecargarPrestamos) btnRecargarPrestamos.onclick = () => cargarPrestamos();
+        if (btnRecargarAprobaciones) btnRecargarAprobaciones.onclick = () => cargarPrestamos();
+        if (btnRecargarInventario) btnRecargarInventario.onclick = () => cargarInventario();
+        if (btnRecargarAsistencias) btnRecargarAsistencias.onclick = () => cargarAsistencias();
+        if (btnRecargarIntegrantes) btnRecargarIntegrantes.onclick = () => cargarIntegrantes();
+    }
+
+    function renderErrorEnTabla(tbodyId, colspan, msg) {
+        const tbody = document.getElementById(tbodyId);
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-4 text-danger"><i class="bi bi-exclamation-triangle me-1"></i> ${escapeHtml(msg)}</td></tr>`;
+        }
+    }
+
     function showNotification(message, type = 'info') {
         const container = document.getElementById('alertContainer');
         if (!container) return;
@@ -521,24 +683,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         `;
 
         container.appendChild(alertDiv);
-
         setTimeout(() => {
             alertDiv.classList.remove('show');
             setTimeout(() => alertDiv.remove(), 250);
         }, 5000);
-    }
-
-    function renderLoansError(msg) {
-        const tbody = document.getElementById('loansTableBody');
-        if (tbody) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-4 text-danger">
-                        <i class="bi bi-exclamation-triangle me-1"></i> ${escapeHtml(msg)}
-                    </td>
-                </tr>
-            `;
-        }
     }
 
     function escapeHtml(text) {
@@ -549,17 +697,5 @@ document.addEventListener('DOMContentLoaded', async function () {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
-    }
-
-    // Botón refrescar préstamos
-    const btnRefresh = document.getElementById('btnRefreshLoans');
-    if (btnRefresh) {
-        btnRefresh.addEventListener('click', async function () {
-            btnRefresh.disabled = true;
-            btnRefresh.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Actualizando...`;
-            await loadLoansSummary();
-            btnRefresh.disabled = false;
-            btnRefresh.innerHTML = `<i class="bi bi-arrow-clockwise me-1"></i> Actualizar Solicitudes`;
-        });
     }
 });
