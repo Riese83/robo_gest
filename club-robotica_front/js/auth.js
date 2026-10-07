@@ -16,18 +16,18 @@
      * Resuelve dinámicamente la URL base de la API REST según el entorno.
      */
     function resolveApiBaseUrl() {
-        const path = window.location.pathname;
-        const origin = window.location.origin;
+        const path = window.location.pathname ? window.location.pathname.toLowerCase() : '';
+        const origin = window.location.origin || '';
 
-        // Si se ejecuta desplegado en Tomcat bajo el contexto /robo_gest/
-        if (path.startsWith('/robo_gest/')) {
+        // Si la ruta contiene /robo_gest (despliegue estándar en Tomcat bajo contexto /robo_gest)
+        if (path.includes('/robo_gest')) {
             return `${origin}/robo_gest/api`;
         }
-        // Si Tomcat o un reverse proxy corre en la raíz (puerto 8080)
-        if (origin.includes(':8080')) {
+        // Si se ejecuta en localhost o un servidor en la raíz
+        if (origin && origin !== 'null' && !origin.startsWith('file')) {
             return `${origin}/api`;
         }
-        // Entorno de desarrollo local independiente (Live Server puerto 5500, etc.)
+        // Entorno de desarrollo local independiente por defecto
         return 'http://localhost:8080/robo_gest/api';
     }
 

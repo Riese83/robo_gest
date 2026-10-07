@@ -6,6 +6,7 @@ package py.edu.une.politecnica.robogest.entity.enums;
 public enum RolEnum {
     MIEMBRO,
     ADMIN,
+    DIRECTIVA,
     COORDINADOR,
     COLABORADOR
 }

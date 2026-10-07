@@ -203,7 +203,11 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Surefire plugin for test execution -->
+            <!-- Maven Sure
+
+
+
+            fire plugin for test execution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

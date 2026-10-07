@@ -59,24 +59,69 @@ public abstract class GenericDAOJpaImpl<T, ID> implements GenericDAO<T, ID> {
     @Override
     public T save(T entity) {
         Objects.requireNonNull(entity, "La entidad a persistir no puede ser null");
-        getEntityManager().persist(entity);
-        return entity;
+        EntityManager currentEm = getEntityManager();
+        boolean activeTransaction = currentEm.getTransaction().isActive();
+        if (!activeTransaction) {
+            currentEm.getTransaction().begin();
+        }
+        try {
+            currentEm.persist(entity);
+            if (!activeTransaction) {
+                currentEm.getTransaction().commit();
+            }
+            return entity;
+        } catch (RuntimeException e) {
+            if (!activeTransaction && currentEm.getTransaction().isActive()) {
+                currentEm.getTransaction().rollback();
+            }
+            throw e;
+        }
     }
 
     @Override
     public T update(T entity) {
         Objects.requireNonNull(entity, "La entidad a actualizar no puede ser null");
-        return getEntityManager().merge(entity);
+        EntityManager currentEm = getEntityManager();
+        boolean activeTransaction = currentEm.getTransaction().isActive();
+        if (!activeTransaction) {
+            currentEm.getTransaction().begin();
+        }
+        try {
+            T merged = currentEm.merge(entity);
+            if (!activeTransaction) {
+                currentEm.getTransaction().commit();
+            }
+            return merged;
+        } catch (RuntimeException e) {
+            if (!activeTransaction && currentEm.getTransaction().isActive()) {
+                currentEm.getTransaction().rollback();
+            }
+            throw e;
+        }
     }
 
     @Override
     public void delete(T entity) {
         Objects.requireNonNull(entity, "La entidad a eliminar no puede ser null");
         EntityManager currentEm = getEntityManager();
-        if (currentEm.contains(entity)) {
-            currentEm.remove(entity);
-        } else {
-            currentEm.remove(currentEm.merge(entity));
+        boolean activeTransaction = currentEm.getTransaction().isActive();
+        if (!activeTransaction) {
+            currentEm.getTransaction().begin();
+        }
+        try {
+            if (currentEm.contains(entity)) {
+                currentEm.remove(entity);
+            } else {
+                currentEm.remove(currentEm.merge(entity));
+            }
+            if (!activeTransaction) {
+                currentEm.getTransaction().commit();
+            }
+        } catch (RuntimeException e) {
+            if (!activeTransaction && currentEm.getTransaction().isActive()) {
+                currentEm.getTransaction().rollback();
+            }
+            throw e;
         }
     }
 

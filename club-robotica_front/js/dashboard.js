@@ -108,16 +108,38 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     /**
-     * Sistema de Navegación SPA: Alterna entre vistas sin recargar la página.
+     * Sistema de Navegación SPA: Alterna entre vistas sin recargar la página y sincroniza con la URL.
      */
+    const HASH_TO_VIEW = {
+        '#dashboard': 'view-dashboard',
+        '#prestamos': 'view-prestamos',
+        '#aprobar-prestamos': 'view-aprobar-prestamos',
+        '#inventario': 'view-inventario',
+        '#asistencia': 'view-asistencia',
+        '#integrantes': 'view-integrantes'
+    };
+
+    const VIEW_TO_HASH = {
+        'view-dashboard': '#dashboard',
+        'view-prestamos': '#prestamos',
+        'view-aprobar-prestamos': '#aprobar-prestamos',
+        'view-inventario': '#inventario',
+        'view-asistencia': '#asistencia',
+        'view-integrantes': '#integrantes'
+    };
+
     function initSpaNavigation() {
         const navItems = document.querySelectorAll('.sidebar-nav-item, [data-view]');
 
         navItems.forEach(item => {
             item.addEventListener('click', function (e) {
                 e.preventDefault();
-                const targetViewId = this.getAttribute('data-view');
+                const targetViewId = this.getAttribute('data-view') || HASH_TO_VIEW[this.getAttribute('href')];
                 if (!targetViewId) return;
+
+                if (VIEW_TO_HASH[targetViewId] && window.location.hash !== VIEW_TO_HASH[targetViewId]) {
+                    history.pushState(null, '', VIEW_TO_HASH[targetViewId]);
+                }
 
                 switchView(targetViewId);
 
@@ -128,6 +150,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             });
         });
+
+        // Escuchar navegación con flechas atrás/adelante del navegador
+        window.addEventListener('popstate', function () {
+            const currentHash = window.location.hash || '#dashboard';
+            const targetViewId = HASH_TO_VIEW[currentHash] || 'view-dashboard';
+            switchView(targetViewId);
+        });
+
+        // Inicializar vista según el hash presente en la URL
+        if (window.location.hash && HASH_TO_VIEW[window.location.hash]) {
+            switchView(HASH_TO_VIEW[window.location.hash]);
+        }
     }
 
     function switchView(viewId) {
@@ -179,6 +213,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             cargarAsistencias();
         } else if (viewId === 'view-integrantes') {
             cargarIntegrantes();
+        } else if (viewId === 'view-dashboard') {
+            cargarPrestamos();
+            cargarAsistencias();
+            actualizarKpis();
         }
     }
 
@@ -216,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 cargarPrestamos(),
                 cargarInventario(),
                 cargarAsistencias(),
-                (userRole === 'ADMIN' ? cargarIntegrantes() : Promise.resolve())
+                (window.Auth.hasAnyRole('ADMIN', 'DIRECTIVA') ? cargarIntegrantes() : Promise.resolve())
             ]);
             actualizarKpis();
         } catch (err) {
@@ -266,12 +304,41 @@ document.addEventListener('DOMContentLoaded', async function () {
             cachePrestamos = await res.json();
             renderTablaPrestamos(cachePrestamos);
             renderTablaAprobaciones(cachePrestamos);
+            renderDashboardResumenPrestamos(cachePrestamos);
             actualizarKpis();
         } catch (err) {
             console.error('[Dashboard] Error cargando préstamos:', err);
             renderErrorEnTabla('tablaPrestamosCompleta', 7, 'Error al conectar con /api/prestamos.');
             renderErrorEnTabla('tablaAprobarPrestamos', 7, 'Error al conectar con /api/prestamos.');
+            renderErrorEnTabla('tablaDashboardPrestamos', 4, 'Error al conectar con /api/prestamos.');
         }
+    }
+
+    function renderDashboardResumenPrestamos(prestamos) {
+        const tbody = document.getElementById('tablaDashboardPrestamos');
+        if (!tbody) return;
+
+        if (!prestamos || prestamos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-3 text-muted">No hay préstamos activos registrados.</td></tr>`;
+            return;
+        }
+
+        const ultimos = prestamos.slice(0, 5);
+        tbody.innerHTML = ultimos.map(p => {
+            const badgeClass = getBadgeEstadoPrestamo(p.estado);
+            const matCount = p.detalles ? p.detalles.length : 0;
+            const matTexto = matCount > 0 ? `${matCount} material(es)` : 'General';
+            return `
+                <tr>
+                    <td class="ps-4 fw-bold text-primary">#${p.prestamoId}</td>
+                    <td>
+                        <span class="fw-semibold d-block">${escapeHtml(p.nombreIntegrante || 'Miembro')}</span>
+                    </td>
+                    <td><small class="badge bg-light text-dark border">${matTexto}</small></td>
+                    <td><span class="badge ${badgeClass} py-1 px-2">${p.estado}</span></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function renderTablaPrestamos(prestamos) {
@@ -470,11 +537,36 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (!res.ok) throw new Error('Error al listar asistencias.');
             cacheAsistencias = await res.json();
             renderTablaAsistencias(cacheAsistencias);
+            renderDashboardResumenAsistencias(cacheAsistencias);
             actualizarKpis();
         } catch (err) {
             console.error('[Dashboard] Error cargando asistencias:', err);
             renderErrorEnTabla('tablaAsistencias', 5, 'Error al conectar con /api/asistencia.');
+            renderErrorEnTabla('tablaDashboardAsistencias', 3, 'Error al conectar con /api/asistencia.');
         }
+    }
+
+    function renderDashboardResumenAsistencias(asistencias) {
+        const tbody = document.getElementById('tablaDashboardAsistencias');
+        if (!tbody) return;
+
+        if (!asistencias || asistencias.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-muted">Aún no hay marcaciones registradas hoy.</td></tr>`;
+            return;
+        }
+
+        const ultimas = [...asistencias].slice(-5).reverse();
+        tbody.innerHTML = ultimas.map(a => {
+            const badgeClass = a.tipo === 'ENTRADA' ? 'bg-success' : 'bg-primary';
+            const horaFormateada = a.fechaHora ? new Date(a.fechaHora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+            return `
+                <tr>
+                    <td class="ps-3"><span class="fw-semibold">${escapeHtml(a.integranteNombre)}</span></td>
+                    <td><small class="text-muted">${horaFormateada}</small></td>
+                    <td><span class="badge ${badgeClass} py-1 px-2">${a.tipo}</span></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function renderTablaAsistencias(asistencias) {
@@ -570,7 +662,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 4. PADRÓN DE INTEGRANTES (SOLO ADMIN)
     // ========================================================
     async function cargarIntegrantes() {
-        if (userRole !== 'ADMIN') return;
+        if (!window.Auth.hasAnyRole('ADMIN', 'DIRECTIVA')) return;
 
         try {
             const res = await window.Auth.authFetch('/integrantes', { method: 'GET' });
