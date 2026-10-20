@@ -139,4 +139,98 @@ public class PrestamoServiceImpl implements PrestamoService {
             throw e;
         }
     }
+
+    @Override
+    @Transactional
+    public Prestamo entregarPrestamo(Long prestamoId) {
+        if (prestamoId == null) {
+            throw new IllegalArgumentException("El ID del prestamo no puede ser null");
+        }
+        Prestamo prestamo = prestamoDAO.findById(prestamoId)
+                .orElseThrow(() -> new PrestamoNoEncontradoException(prestamoId));
+
+        if (prestamo.getEstado() != EstadoPrestamoEnum.APROBADO) {
+            throw new EstadoPrestamoInvalidoException(String.format(
+                    "Solo se puede entregar un prestamo previamente APROBADO. Estado actual: %s",
+                    prestamo.getEstado()
+            ));
+        }
+
+        prestamo.setEstado(EstadoPrestamoEnum.ENTREGADO);
+        if (prestamo.getFechaEntrega() == null) {
+            prestamo.setFechaEntrega(LocalDateTime.now());
+        }
+
+        return prestamoDAO.update(prestamo);
+    }
+
+    @Override
+    @Transactional
+    public Prestamo devolverPrestamo(Long prestamoId) {
+        if (prestamoId == null) {
+            throw new IllegalArgumentException("El ID del prestamo no puede ser null");
+        }
+        Prestamo prestamo = prestamoDAO.findById(prestamoId)
+                .orElseThrow(() -> new PrestamoNoEncontradoException(prestamoId));
+
+        if (prestamo.getEstado() != EstadoPrestamoEnum.ENTREGADO && prestamo.getEstado() != EstadoPrestamoEnum.VENCIDO) {
+            throw new EstadoPrestamoInvalidoException(String.format(
+                    "Solo se puede devolver un prestamo en estado ENTREGADO o VENCIDO. Estado actual: %s",
+                    prestamo.getEstado()
+            ));
+        }
+
+        if (prestamo.getFechaEntrega() == null) {
+            prestamo.setFechaEntrega(LocalDateTime.now().minusHours(1));
+        }
+        prestamo.setFechaDevolucionReal(LocalDateTime.now());
+        prestamo.setEstado(EstadoPrestamoEnum.DEVUELTO);
+
+        return prestamoDAO.update(prestamo);
+    }
+
+    @Override
+    @Transactional
+    public Prestamo cancelarPrestamo(Long prestamoId) {
+        if (prestamoId == null) {
+            throw new IllegalArgumentException("El ID del prestamo no puede ser null");
+        }
+        Prestamo prestamo = prestamoDAO.findById(prestamoId)
+                .orElseThrow(() -> new PrestamoNoEncontradoException(prestamoId));
+
+        if (prestamo.getEstado() != EstadoPrestamoEnum.SOLICITADO && prestamo.getEstado() != EstadoPrestamoEnum.APROBADO) {
+            throw new EstadoPrestamoInvalidoException(String.format(
+                    "Solo se puede cancelar un prestamo en estado SOLICITADO o APROBADO. Estado actual: %s",
+                    prestamo.getEstado()
+            ));
+        }
+
+        prestamo.setEstado(EstadoPrestamoEnum.CANCELADO);
+        return prestamoDAO.update(prestamo);
+    }
+
+    @Override
+    @Transactional
+    public Prestamo rechazarPrestamo(Long prestamoId, String motivo) {
+        if (prestamoId == null) {
+            throw new IllegalArgumentException("El ID del prestamo no puede ser null");
+        }
+        Prestamo prestamo = prestamoDAO.findById(prestamoId)
+                .orElseThrow(() -> new PrestamoNoEncontradoException(prestamoId));
+
+        if (prestamo.getEstado() != EstadoPrestamoEnum.SOLICITADO) {
+            throw new EstadoPrestamoInvalidoException(String.format(
+                    "Solo se puede rechazar un prestamo en estado SOLICITADO. Estado actual: %s",
+                    prestamo.getEstado()
+            ));
+        }
+
+        prestamo.setEstado(EstadoPrestamoEnum.RECHAZADO);
+        if (motivo != null && !motivo.isBlank()) {
+            String desc = prestamo.getDescripcion() != null ? prestamo.getDescripcion() + " " : "";
+            prestamo.setDescripcion(desc + "[Rechazado: " + motivo.trim() + "]");
+        }
+
+        return prestamoDAO.update(prestamo);
+    }
 }

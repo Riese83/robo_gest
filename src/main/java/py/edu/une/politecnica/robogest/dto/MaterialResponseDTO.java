@@ -17,14 +17,21 @@ public class MaterialResponseDTO implements Serializable {
     private String marca;
     private String modelo;
     private Integer cantidadTotal;
+    private Integer cantidadDisponible;
+    private Integer cantidadReservada;
     private String estado;
     private String ubicacion;
+    private Long categoriaId;
     private String categoriaNombre;
 
     public MaterialResponseDTO() {
     }
 
     public static MaterialResponseDTO fromEntity(Material m) {
+        return fromEntity(m, 0);
+    }
+
+    public static MaterialResponseDTO fromEntity(Material m, int reservas) {
         if (m == null) return null;
         MaterialResponseDTO dto = new MaterialResponseDTO();
         dto.setId(m.getId());
@@ -33,12 +40,24 @@ public class MaterialResponseDTO implements Serializable {
         dto.setMarca(m.getMarca());
         dto.setModelo(m.getModelo());
         dto.setCantidadTotal(m.getCantidadTotal());
+        int total = m.getCantidadTotal() != null ? m.getCantidadTotal() : 0;
+        dto.setCantidadReservada(reservas);
+        dto.setCantidadDisponible(Math.max(0, total - reservas));
         dto.setEstado(m.getEstado() != null ? m.getEstado().name() : "ACTIVO");
         dto.setUbicacion(m.getUbicacion());
         if (m.getCategoria() != null) {
+            dto.setCategoriaId(m.getCategoria().getId());
             dto.setCategoriaNombre(m.getCategoria().getNombre());
         }
         return dto;
+    }
+
+    public Long getCategoriaId() {
+        return categoriaId;
+    }
+
+    public void setCategoriaId(Long categoriaId) {
+        this.categoriaId = categoriaId;
     }
 
     public Long getId() {
@@ -111,5 +130,21 @@ public class MaterialResponseDTO implements Serializable {
 
     public void setCategoriaNombre(String categoriaNombre) {
         this.categoriaNombre = categoriaNombre;
+    }
+
+    public Integer getCantidadDisponible() {
+        return cantidadDisponible;
+    }
+
+    public void setCantidadDisponible(Integer cantidadDisponible) {
+        this.cantidadDisponible = cantidadDisponible;
+    }
+
+    public Integer getCantidadReservada() {
+        return cantidadReservada;
+    }
+
+    public void setCantidadReservada(Integer cantidadReservada) {
+        this.cantidadReservada = cantidadReservada;
     }
 }

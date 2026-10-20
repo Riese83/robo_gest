@@ -24,7 +24,7 @@ public class ProyectoMaterialDAOJpaImpl extends GenericDAOJpaImpl<ProyectoMateri
     @Override
     public List<ProyectoMaterial> findByProyectoId(Long proyectoId) {
         String jpql = "SELECT pm FROM ProyectoMaterial pm WHERE pm.proyecto.id = :proyectoId";
-        TypedQuery<ProyectoMaterial> query = em.createQuery(jpql, ProyectoMaterial.class);
+        TypedQuery<ProyectoMaterial> query = getEntityManager().createQuery(jpql, ProyectoMaterial.class);
         query.setParameter("proyectoId", proyectoId);
         return query.getResultList();
     }
@@ -32,7 +32,7 @@ public class ProyectoMaterialDAOJpaImpl extends GenericDAOJpaImpl<ProyectoMateri
     @Override
     public List<ProyectoMaterial> findByMaterialId(Long materialId) {
         String jpql = "SELECT pm FROM ProyectoMaterial pm WHERE pm.material.id = :materialId";
-        TypedQuery<ProyectoMaterial> query = em.createQuery(jpql, ProyectoMaterial.class);
+        TypedQuery<ProyectoMaterial> query = getEntityManager().createQuery(jpql, ProyectoMaterial.class);
         query.setParameter("materialId", materialId);
         return query.getResultList();
     }

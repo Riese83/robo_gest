@@ -20,11 +20,19 @@ public class JwtTokenProvider {
     private static final String DEFAULT_SECRET = "RoboGestSecretKeyForJwtTokenGenerationSecurityFPUNE2026ClubRobotica!";
     private static final long DEFAULT_EXPIRATION_MS = 86400000L; // 24 horas
 
+    private static String resolveSecret() {
+        String envSecret = System.getenv("JWT_SECRET");
+        if (envSecret != null && envSecret.trim().length() >= 32) {
+            return envSecret.trim();
+        }
+        return DEFAULT_SECRET;
+    }
+
     private final SecretKey key;
     private final long expirationMs;
 
     public JwtTokenProvider() {
-        this(DEFAULT_SECRET, DEFAULT_EXPIRATION_MS);
+        this(resolveSecret(), DEFAULT_EXPIRATION_MS);
     }
 
     public JwtTokenProvider(String secret, long expirationMs) {

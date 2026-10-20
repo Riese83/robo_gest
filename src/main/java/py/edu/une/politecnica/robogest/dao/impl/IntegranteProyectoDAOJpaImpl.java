@@ -24,7 +24,7 @@ public class IntegranteProyectoDAOJpaImpl extends GenericDAOJpaImpl<IntegrantePr
     @Override
     public List<IntegranteProyecto> findByProyectoId(Long proyectoId) {
         String jpql = "SELECT ip FROM IntegranteProyecto ip WHERE ip.proyecto.id = :proyectoId ORDER BY ip.fechaIncorporacion ASC";
-        TypedQuery<IntegranteProyecto> query = em.createQuery(jpql, IntegranteProyecto.class);
+        TypedQuery<IntegranteProyecto> query = getEntityManager().createQuery(jpql, IntegranteProyecto.class);
         query.setParameter("proyectoId", proyectoId);
         return query.getResultList();
     }
@@ -32,7 +32,7 @@ public class IntegranteProyectoDAOJpaImpl extends GenericDAOJpaImpl<IntegrantePr
     @Override
     public List<IntegranteProyecto> findByIntegranteId(Long integranteId) {
         String jpql = "SELECT ip FROM IntegranteProyecto ip WHERE ip.integrante.id = :integranteId ORDER BY ip.fechaIncorporacion DESC";
-        TypedQuery<IntegranteProyecto> query = em.createQuery(jpql, IntegranteProyecto.class);
+        TypedQuery<IntegranteProyecto> query = getEntityManager().createQuery(jpql, IntegranteProyecto.class);
         query.setParameter("integranteId", integranteId);
         return query.getResultList();
     }

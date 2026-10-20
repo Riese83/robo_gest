@@ -1,8 +1,8 @@
 /* ========================================
-   PÁGINA DE CONTACTO
+   PAGINA DE CONTACTO
 ======================================== */
 
-/* Sección principal */
+/* Seccion principal */
 
 .contact-section {
     min-height: calc(100vh - 80px);
@@ -34,7 +34,7 @@
 
 /* ========================================
    LADO IZQUIERDO
-   INFORMACIÓN DEL CLUB
+   INFORMACION DEL CLUB
 ======================================== */
 
 .contact-info {
@@ -48,7 +48,7 @@
 }
 
 
-/* Introducción */
+/* Introduccion */
 
 .contact-info__intro {
     margin-bottom: 4rem;
@@ -72,7 +72,7 @@
 
 
 /* ========================================
-   INFORMACIÓN 2 x 2
+   INFORMACION 2 x 2
 ======================================== */
 
 .contact-info__grid {
@@ -91,7 +91,7 @@
 }
 
 
-/* Símbolos Unicode */
+/* Simbolos Unicode */
 
 .contact-info__icon {
     display: block;
@@ -105,7 +105,7 @@
 }
 
 
-/* Títulos */
+/* Titulos */
 
 .contact-info__item h2 {
     margin-bottom: 0.7rem;
@@ -126,6 +126,18 @@
     line-height: 1.7;
 
     color: rgba(255, 255, 255, 0.72);
+}
+
+.contact-link {
+    color: #64B5F6;
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+    word-break: break-word;
+}
+
+.contact-link:hover {
+    color: #90CAF9;
+    text-decoration: underline;
 }
 
 
@@ -219,13 +231,65 @@
 
 
 /* ========================================
-   BOTÓN
+   BOTON
 ======================================== */
 
 .contact-form__button {
     width: 100%;
 
     margin-top: 0.5rem;
+}
+
+/* ========================================
+   ESTADO Y FEEDBACK DEL FORMULARIO
+======================================== */
+
+.contact-form__status {
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.contact-form__status--success {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #C8E6C9;
+}
+
+.contact-form__status--error {
+    background-color: #FFF3E0;
+    color: #BF360C;
+    border: 1px solid #FFE0B2;
+}
+
+.contact-form__status .btn-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.contact-form__status .btn-fallback:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.contact-form__status .btn-fallback-wa {
+    background-color: #25D366;
+    color: #FFFFFF !important;
+}
+
+.contact-form__status .btn-fallback-mail {
+    background-color: #12355B;
+    color: #FFFFFF !important;
 }
 
 /* ========================================

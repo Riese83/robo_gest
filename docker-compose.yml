@@ -12,5 +12,24 @@ services:
       - db_data:/var/lib/mysql
       - ./bd_script:/docker-entrypoint-initdb.d:ro
 
+  app_robogest:
+    image: tomcat:10.1-jdk21
+    container_name: tomcat_robogest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db_robogest
+      DB_PORT: "3306"
+      DB_NAME: club_robotica
+      DB_USER: root
+      DB_PASSWORD: root_password
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      GEMINI_MODEL: "gemini-flash-lite-latest"
+    volumes:
+      - ./target/robo_gest.war:/usr/local/tomcat/webapps/robo_gest.war
+    depends_on:
+      - db_robogest
+
 volumes:
   db_data:

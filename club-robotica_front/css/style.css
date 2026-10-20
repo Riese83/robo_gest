@@ -20,7 +20,7 @@
     /* Bordes */
     --color-border: #D9E1E8;
 
-    /* Tipografía */
+    /* Tipografia */
     --font-primary: "Inter", Arial, sans-serif;
 
     /* Espaciados */
@@ -70,7 +70,7 @@ body {
 
 
 /* ========================================
-   ELEMENTOS BÁSICOS
+   ELEMENTOS BASICOS
 ======================================== */
 
 img {
@@ -122,7 +122,7 @@ textarea {
 
 
 /* ========================================
-   TÍTULOS Y TEXTOS
+   TITULOS Y TEXTOS
 ======================================== */
 
 .section-header {
@@ -193,7 +193,7 @@ textarea {
 }
 
 /* ========================================
-   BARRA DE NAVEGACIÓN
+   BARRA DE NAVEGACION
 ======================================== */
 
 .site-header {
@@ -218,11 +218,11 @@ textarea {
 }
 
 main {
-    padding-top: 80px;
+    padding-top: 90px;
 }
 
 .navbar {
-    min-height: 80px;
+    min-height: 90px;
 
     display: flex;
     align-items: center;
@@ -239,15 +239,30 @@ main {
 .brand {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.85rem;
 
     flex-shrink: 0;
 }
 
 
+
+.brand-logo {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    border-radius: 50%;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(10, 45, 74, 0.16));
+    transition: transform 0.2s ease;
+}
+
+.brand:hover .brand-logo {
+    transform: scale(1.05);
+}
+
 .logo-placeholder {
-    width: 48px;
-    height: 48px;
+    width: 58px;
+    height: 58px;
 
     display: flex;
     align-items: center;
@@ -258,22 +273,23 @@ main {
     border-radius: var(--radius-sm);
 
     color: var(--color-primary);
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
 
 .brand-name {
     color: var(--color-primary);
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 700;
+    letter-spacing: -0.01em;
 
     white-space: nowrap;
 }
 
 
 /* ========================================
-   ENLACES DE NAVEGACIÓN
+   ENLACES DE NAVEGACION
 ======================================== */
 
 .nav-links {
@@ -289,8 +305,8 @@ main {
 
 .nav-link {
     color: var(--color-text-secondary);
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 1.08rem;
+    font-weight: 600;
 
     transition: color var(--transition);
 }
@@ -304,4 +320,264 @@ main {
 .nav-link--active {
     color: var(--color-primary);
     font-weight: 700;
+}
+
+.nav-login {
+    font-size: 1.02rem;
+    padding: 0.75rem 1.4rem;
+}
+
+
+/* ========================================
+   PIE DE PAGINA (SITE FOOTER)
+======================================== */
+
+.site-footer {
+    background-color: var(--color-primary);
+    color: rgba(255, 255, 255, 0.85);
+    padding: var(--spacing-xxl) 0 var(--spacing-lg) 0;
+    margin-top: auto;
+    border-top: 4px solid var(--color-accent);
+}
+
+.footer-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 0.9fr 1.3fr 1.4fr;
+    gap: var(--spacing-xl);
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.footer-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.footer-brand-title {
+    display: block;
+    color: var(--color-white);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.footer-brand-sub {
+    display: block;
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.footer-description {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.footer-title {
+    color: var(--color-white);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 28px;
+    height: 2px;
+    background-color: var(--color-accent);
+    border-radius: 2px;
+}
+
+.footer-links,
+.footer-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.footer-links a,
+.footer-contact a {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.93rem;
+    transition: color var(--transition), transform var(--transition);
+    display: inline-block;
+}
+
+.footer-links a:hover,
+.footer-contact a:hover {
+    color: var(--color-accent);
+    transform: translateX(4px);
+}
+
+.footer-contact li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+}
+
+.footer-contact-icon {
+    font-size: 1rem;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.footer-address {
+    font-style: normal;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.footer-institution {
+    color: var(--color-white);
+    margin-bottom: 0.25rem;
+}
+
+.footer-bottom {
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-meta {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+@media (max-width: 900px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.4rem;
+    }
+}
+
+/* ========================================
+   PAGINA DE POLITICAS DE PRIVACIDAD
+======================================== */
+
+.privacy-section {
+    padding: var(--spacing-xl) 0 var(--spacing-xxl) 0;
+    background-color: var(--color-background);
+    min-height: calc(100vh - 80px);
+}
+
+.privacy-card {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px rgba(18, 53, 91, 0.08);
+    padding: var(--spacing-xl);
+    border: 1px solid var(--color-border);
+}
+
+.privacy-card h1 {
+    font-size: 2.2rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.privacy-badge {
+    display: inline-block;
+    background-color: rgba(34, 166, 168, 0.12);
+    color: var(--color-secondary);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+}
+
+.privacy-section-block {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.privacy-section-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.privacy-section-block h2 {
+    font-size: 1.35rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.privacy-section-block p, 
+.privacy-section-block li {
+    color: var(--color-text);
+    line-height: 1.7;
+    font-size: 0.98rem;
+}
+
+.privacy-section-block ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: var(--spacing-xs) 0 var(--spacing-sm) 0;
+}
+
+.privacy-section-block li {
+    margin-bottom: 0.4rem;
+}
+
+.footer-privacy-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.footer-privacy-link:hover {
+    color: var(--color-white);
 }

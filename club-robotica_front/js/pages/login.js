@@ -1,18 +1,18 @@
 // ========================================
-// CONTROLADOR DE PÁGINA LOGIN
-// Club de Robótica - FP-UNE
+// CONTROLADOR DE PAGINA LOGIN
+// Club de Robotica - FP-UNE
 // ========================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // 1. Si el usuario ya cuenta con sesión activa, redirigir al Dashboard
+    // 1. Si el usuario ya cuenta con sesion activa, redirigir al Dashboard
     if (window.Auth && typeof window.Auth.redirectIfAuthenticated === "function") {
         if (window.Auth.redirectIfAuthenticated()) {
             return;
         }
     }
 
-    // 2. Mostrar / Ocultar contraseña
+    // 2. Mostrar / Ocultar contrasena
     const passwordInput = document.querySelector("#password");
     const showPasswordCheckbox = document.querySelector("#show-password");
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 3. Inicializar captura y autenticación del formulario con auth.js
+    // 3. Inicializar captura y autenticacion del formulario con auth.js
     if (window.Auth && typeof window.Auth.initLoginForm === "function") {
         window.Auth.initLoginForm({
             form: ".login-form",

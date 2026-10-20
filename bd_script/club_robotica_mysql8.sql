@@ -1,5 +1,5 @@
 -- ============================================================
--- ROBO_GEST - Club de Robótica (FP-UNE)
+-- ROBO_GEST - Club de Robotica (FP-UNE)
 -- Esquema de Base de Datos para MySQL 8.0+ (InnoDB, UTF-8)
 -- ============================================================
 
@@ -202,7 +202,7 @@ CREATE INDEX idx_prestamo_proyecto ON prestamo (proyecto_id);
 CREATE INDEX idx_prestamo_estado ON prestamo (estado);
 
 -- ============================================================
--- 8. TABLA: detalle_prestamo (Items asociados al préstamo)
+-- 8. TABLA: detalle_prestamo (Items asociados al prestamo)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS detalle_prestamo (
     prestamo_id BIGINT NOT NULL,
@@ -250,7 +250,7 @@ CREATE TABLE IF NOT EXISTS proyecto_material (
 CREATE INDEX idx_pm_material ON proyecto_material (material_id);
 
 -- ============================================================
--- 10. VISTA: vw_stock_material (Cálculo dinámico de stock)
+-- 10. VISTA: vw_stock_material (Calculo dinamico de stock)
 -- ============================================================
 CREATE OR REPLACE VIEW vw_stock_material AS
 SELECT
@@ -310,8 +310,8 @@ WHERE p.estado = 'ENTREGADO'
 -- ============================================================
 -- 12. PROCEDIMIENTOS ALMACENADOS (Stored Procedures en MySQL 8)
 --
--- Nota de Arquitectura: La lógica de negocio transaccional se
--- diseñará preferentemente en la capa de servicios de Java (ACID con
+-- Nota de Arquitectura: La logica de negocio transaccional se
+-- disenara preferentemente en la capa de servicios de Java (ACID con
 -- @Transactional y bloqueo pesimista PESSIMISTIC_WRITE). Sin embargo,
 -- se proporcionan estos Stored Procedures como alternativa nativa en BD.
 -- ============================================================
@@ -351,12 +351,12 @@ proc_label: BEGIN
     -- Validar fecha futura
     IF p_fecha_devolucion_prevista IS NULL OR p_fecha_devolucion_prevista <= CURRENT_TIMESTAMP THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'La fecha de devolución prevista debe ser futura';
+            SET MESSAGE_TEXT = 'La fecha de devolucion prevista debe ser futura';
     END IF;
 
     START TRANSACTION;
 
-    -- Bloqueo pesimista del préstamo
+    -- Bloqueo pesimista del prestamo
     SELECT estado
       INTO v_estado
       FROM prestamo
@@ -366,13 +366,13 @@ proc_label: BEGIN
     IF v_estado IS NULL THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'El préstamo no existe';
+            SET MESSAGE_TEXT = 'El prestamo no existe';
     END IF;
 
     IF v_estado <> 'SOLICITADO' THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Solo se puede aprobar un préstamo en estado SOLICITADO';
+            SET MESSAGE_TEXT = 'Solo se puede aprobar un prestamo en estado SOLICITADO';
     END IF;
 
     -- Verificar existencia de items
@@ -384,7 +384,7 @@ proc_label: BEGIN
     IF v_cant_detalles = 0 THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'El préstamo no contiene materiales asociados';
+            SET MESSAGE_TEXT = 'El prestamo no contiene materiales asociados';
     END IF;
 
     -- Iterar y bloquear materiales involucrados
@@ -422,7 +422,7 @@ proc_label: BEGIN
             CLOSE cur_items;
             ROLLBACK;
             SIGNAL SQLSTATE '45000'
-                SET MESSAGE_TEXT = 'Stock insuficiente para cubrir el préstamo del material';
+                SET MESSAGE_TEXT = 'Stock insuficiente para cubrir el prestamo del material';
         END IF;
     END LOOP item_loop;
     CLOSE cur_items;
@@ -455,7 +455,7 @@ BEGIN
     IF v_rows_affected = 0 THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Solo se puede entregar un préstamo en estado APROBADO';
+            SET MESSAGE_TEXT = 'Solo se puede entregar un prestamo en estado APROBADO';
     ELSE
         COMMIT;
     END IF;
@@ -480,7 +480,7 @@ BEGIN
     IF v_rows_affected = 0 THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Solo se puede devolver un préstamo ENTREGADO o VENCIDO';
+            SET MESSAGE_TEXT = 'Solo se puede devolver un prestamo ENTREGADO o VENCIDO';
     ELSE
         COMMIT;
     END IF;
@@ -504,7 +504,7 @@ BEGIN
     IF v_rows_affected = 0 THEN
         ROLLBACK;
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Solo se puede cancelar un préstamo SOLICITADO o APROBADO';
+            SET MESSAGE_TEXT = 'Solo se puede cancelar un prestamo SOLICITADO o APROBADO';
     ELSE
         COMMIT;
     END IF;

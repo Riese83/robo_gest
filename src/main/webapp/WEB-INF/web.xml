@@ -7,6 +7,16 @@
 
     <display-name>Robo_Gest</display-name>
 
+    <!-- Filtro para liberar conexiones JPA en cada peticion REST -->
+    <filter>
+        <filter-name>JpaCleanupFilter</filter-name>
+        <filter-class>py.edu.une.politecnica.robogest.controller.JpaCleanupFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>JpaCleanupFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
     <!-- Pagina de bienvenida para la raiz del sitio -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

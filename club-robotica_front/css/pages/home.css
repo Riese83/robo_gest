@@ -1,5 +1,5 @@
 /* ========================================
-   PÁGINA PRINCIPAL - HERO
+   PAGINA PRINCIPAL - HERO
 ======================================== */
 
 .hero {
@@ -14,7 +14,7 @@
 
 
 /* ========================================
-   SLIDES / IMÁGENES
+   SLIDES / IMAGENES
 ======================================== */
 
 .hero-slider {
@@ -270,6 +270,78 @@
 
 
 /* ========================================
+   SHOWCASE DE EMBLEMA DEL CLUB
+======================================== */
+
+.about-club__image-showcase {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 3rem 2rem;
+
+    background: radial-gradient(circle at center, #ffffff 40%, #eef4f9 100%);
+    border: 1px solid rgba(10, 45, 74, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 16px 40px rgba(10, 45, 74, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.about-club__logo-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 10px 32px rgba(10, 45, 74, 0.14);
+    padding: 12px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.about-club__image-showcase:hover .about-club__logo-frame {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 42px rgba(10, 45, 74, 0.20);
+}
+
+.about-club__logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.about-club__logo-caption {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid rgba(10, 45, 74, 0.15);
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(10, 45, 74, 0.06);
+}
+
+.about-club__logo-tag {
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.about-club__logo-subtag {
+    color: var(--color-accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding-left: 0.5rem;
+    border-left: 2px solid rgba(10, 45, 74, 0.15);
+}
+
+
+/* ========================================
    CONTENIDO
 ======================================== */
 
@@ -377,8 +449,16 @@
     }
 
 
-    .about-club__image-placeholder {
+    .about-club__image-placeholder,
+    .about-club__image-showcase {
         min-height: 250px;
+        padding: 2rem 1.5rem;
+    }
+
+    .about-club__logo-frame {
+        width: 170px;
+        height: 170px;
+        padding: 8px;
     }
 
 
@@ -386,4 +466,153 @@
         max-width: none;
     }
 
+}
+
+
+/* ========================================
+   SECCION DE PREGUNTAS FRECUENTES (FAQ)
+======================================== */
+
+.faq-section {
+    padding: var(--spacing-xxl) 0;
+    background-color: var(--color-white);
+    border-top: 1px solid var(--color-border);
+}
+
+.faq-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.faq-accordion {
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.faq-item[open] {
+    border-color: var(--color-secondary);
+    box-shadow: var(--shadow-sm);
+    background-color: #fbfcff;
+}
+
+.faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--color-primary);
+    list-style: none;
+    user-select: none;
+    transition: color var(--transition), background-color var(--transition);
+}
+
+.faq-question::-webkit-details-marker {
+    display: none;
+}
+
+.faq-question:hover {
+    color: var(--color-secondary);
+    background-color: rgba(30, 111, 159, 0.04);
+}
+
+.faq-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-left: 1rem;
+    transition: transform var(--transition);
+}
+
+.faq-icon::before,
+.faq-icon::after {
+    content: "";
+    position: absolute;
+    background-color: var(--color-secondary);
+    border-radius: 2px;
+    transition: transform var(--transition), background-color var(--transition), opacity var(--transition);
+}
+
+/* Linea horizontal */
+.faq-icon::before {
+    top: 9px;
+    left: 2px;
+    width: 16px;
+    height: 2px;
+}
+
+/* Linea vertical */
+.faq-icon::after {
+    top: 2px;
+    left: 9px;
+    width: 2px;
+    height: 16px;
+}
+
+.faq-item[open] .faq-icon::after {
+    transform: rotate(90deg);
+    opacity: 0;
+}
+
+.faq-item[open] .faq-icon::before {
+    background-color: var(--color-accent);
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1.25rem 1.5rem;
+    color: var(--color-text-secondary);
+    font-size: 0.98rem;
+    line-height: 1.7;
+    animation: faqFadeIn 0.25s ease-in-out;
+}
+
+.faq-answer strong {
+    color: var(--color-text);
+}
+
+.faq-link {
+    color: var(--color-secondary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition);
+}
+
+.faq-link:hover {
+    color: var(--color-accent);
+}
+
+@keyframes faqFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .faq-question {
+        padding: 1.1rem 1.2rem;
+        font-size: 0.98rem;
+    }
+
+    .faq-answer {
+        padding: 0 1.2rem 1.1rem 1.2rem;
+        font-size: 0.92rem;
+    }
 }

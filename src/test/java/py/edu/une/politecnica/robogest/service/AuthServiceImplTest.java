@@ -91,7 +91,7 @@ class AuthServiceImplTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar CredencialesInvalidasException cuando la contraseña es incorrecta")
+    @DisplayName("Debe lanzar CredencialesInvalidasException cuando la contrasena es incorrecta")
     void testAutenticar_PasswordIncorrecta() {
         Integrante integrante = crearIntegranteValido("ClaveCorrecta123", EstadoIntegranteEnum.ACTIVO);
         when(integranteDAO.findByEmail("carlos.gomez@fpune.edu.py")).thenReturn(Optional.of(integrante));

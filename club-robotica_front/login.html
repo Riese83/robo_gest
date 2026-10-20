@@ -8,9 +8,10 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Club de Robótica | Iniciar sesión</title>
+    <title>Club de Robotica | Iniciar sesion</title>
+    <link rel="icon" type="image/png" href="assets/images/brand/logo_icono.png">
 
-    <!-- Tipografía -->
+    <!-- Tipografia -->
     <link
         rel="preconnect"
         href="https://fonts.googleapis.com"
@@ -30,26 +31,26 @@
     <!-- Estilos globales -->
     <link
         rel="stylesheet"
-        href="css/style.css"
+        href="css/style.css?v=2.4"
     >
 
-    <!-- Estilos específicos de la página -->
+    <!-- Estilos especificos de la pagina -->
     <link
         rel="stylesheet"
-        href="css/pages/login.css"
+        href="css/pages/login.css?v=2.4"
     >
 
     <!-- Estilos responsive -->
     <link
         rel="stylesheet"
-        href="css/responsive.css"
+        href="css/responsive.css?v=2.4"
     >
 </head>
 
 <body>
 
     <!-- ========================================
-    BARRA DE NAVEGACIÓN
+    BARRA DE NAVEGACION
     ========================================= -->
 
     <header class="site-header">
@@ -61,24 +62,19 @@
                 class="brand"
             >
 
-                <div
-                    class="logo-placeholder"
-                    aria-hidden="true"
-                >
-                    LOGO
-                </div>
+                <img src="assets/images/brand/logo_icono.png" alt="Logo Club de Robótica FP-UNE" class="brand-logo">
 
                 <span class="brand-name">
-                    Club de Robótica
+                    Club de Robotica
                 </span>
 
             </a>
 
-            <!-- Botón hamburguesa -->
+            <!-- Boton hamburguesa -->
             <button
                 class="nav-toggle"
                 type="button"
-                aria-label="Abrir menú de navegación"
+                aria-label="Abrir menu de navegacion"
                 aria-expanded="false"
             >
                 <span></span>
@@ -86,7 +82,7 @@
                 <span></span>
             </button>
 
-            <!-- Menú de navegación -->
+            <!-- Menu de navegacion -->
             <div class="nav-menu">
 
                 <div class="nav-links">
@@ -109,14 +105,7 @@
                         href="categorias.html"
                         class="nav-link"
                     >
-                        Categorías
-                    </a>
-
-                    <a
-                        href="noticias.html"
-                        class="nav-link"
-                    >
-                        Noticias
+                        Categorias
                     </a>
 
                     <a
@@ -128,12 +117,12 @@
 
                 </div>
 
-                <!-- Página actual -->
+                <!-- Pagina actual -->
                 <a
                     href="login.html"
                     class="btn btn--primary nav-login"
                 >
-                    Iniciar sesión
+                    Iniciar sesion
                 </a>
 
             </div>
@@ -149,7 +138,7 @@
     <main>
 
         <!-- ========================================
-        SECCIÓN DE INICIO DE SESIÓN
+        SECCION DE INICIO DE SESION
         ========================================= -->
 
         <section class="login-section">
@@ -164,65 +153,65 @@
                         class="login-card__logo"
                         aria-hidden="true"
                     >
-                        LOGO
+                        <img src="assets/images/brand/logo_icono.png" alt="Logo Club de Robotica FP-UNE" class="login-card__logo-img" width="120" height="120">
                     </div>
 
 
-                    <!-- Introducción -->
+                    <!-- Introduccion -->
                     <div class="login-card__intro">
 
                         <h1>
-                            Iniciar sesión
+                            Iniciar sesion
                         </h1>
 
                         <p>
-                            Si ya eres miembro del club, inicie sesión.
+                            Si ya eres miembro del club, inicie sesion.
                         </p>
 
                     </div>
 
 
                     <!-- ========================================
-                    FORMULARIO DE INICIO DE SESIÓN
+                    FORMULARIO DE INICIO DE SESION
                     ========================================= -->
 
                     <form class="login-form">
 
-                        <!-- Número de cédula -->
+                        <!-- Numero de cedula -->
                         <div class="form-group">
 
                             <label for="cedula">
-                                Número de cédula
+                                Numero de cedula
                             </label>
 
                             <input
                                 type="text"
                                 id="cedula"
                                 name="cedula"
-                                placeholder="Ingrese su número de cédula"
+                                placeholder="Ingrese su numero de cedula"
                             >
 
                         </div>
 
 
-                        <!-- Contraseña -->
+                        <!-- Contrasena -->
                         <div class="form-group">
 
                             <label for="password">
-                                Contraseña
+                                Contrasena
                             </label>
 
                             <input
                                 type="password"
                                 id="password"
                                 name="password"
-                                placeholder="Ingrese su contraseña"
+                                placeholder="Ingrese su contrasena"
                             >
 
                         </div>
 
 
-                        <!-- Mostrar contraseña -->
+                        <!-- Mostrar contrasena -->
                         <label class="password-toggle">
 
                             <input
@@ -231,27 +220,27 @@
                             >
 
                             <span>
-                                Mostrar contraseña
+                                Mostrar contrasena
                             </span>
 
                         </label>
 
 
-                        <!-- Recuperación de contraseña -->
+                        <!-- Recuperacion de contrasena -->
                         <a
                             href="#"
                             class="login-form__forgot-password"
                         >
-                            ¿Olvidaste tu contraseña?
+                            Olvidaste tu contrasena?
                         </a>
 
 
-                        <!-- Botón principal -->
+                        <!-- Boton principal -->
                         <button
                             type="submit"
                             class="btn btn--primary login-form__button"
                         >
-                            Iniciar sesión
+                            Iniciar sesion
                         </button>
 
                     </form>
@@ -264,7 +253,7 @@
                     <div class="login-card__register">
 
                         <p>
-                            ¿Aún no eres miembro del club?
+                            Aun no eres miembro del club?
                         </p>
 
                         <a

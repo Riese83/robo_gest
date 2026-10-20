@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robo_Gest | Panel de Gestión - Club de Robótica FP-UNE</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Robo_Gest | Panel de Gestion - Club de Robotica FP-UNE</title>
+    <link rel="icon" type="image/png" href="assets/images/brand/logo_icono.png">
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +20,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Estilos específicos del Dashboard -->
+    <!-- Estilos especificos del Dashboard -->
     <style>
         :root {
             --brand-primary: #12355B;
@@ -42,12 +46,17 @@
         #sidebar-wrapper {
             width: var(--sidebar-width);
             min-width: var(--sidebar-width);
+            height: 100vh;
+            height: 100dvh;
+            position: sticky;
+            top: 0;
             background-color: var(--brand-primary);
             color: #FFFFFF;
             transition: margin 0.25s ease-out;
             display: flex;
             flex-direction: column;
             z-index: 1000;
+            overflow: hidden;
         }
 
         .sidebar-brand {
@@ -60,17 +69,28 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: #FFFFFF;
             text-decoration: none;
+            flex-shrink: 0;
         }
 
         .sidebar-brand .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--brand-accent), var(--brand-secondary));
-            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            background: #FFFFFF;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-brand .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .sidebar-nav {
@@ -78,6 +98,23 @@
             padding: 1rem 0;
             margin: 0;
             flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
         }
 
         .sidebar-heading {
@@ -129,6 +166,8 @@
             padding: 1rem 1.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             background-color: rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            margin-top: auto;
         }
 
         /* Top Navbar */
@@ -186,6 +225,47 @@
             color: #FFFFFF;
         }
 
+        /* Tier Badges & Cuadro de Honor */
+        .badge-tier-diamante {
+            background: linear-gradient(135deg, #0284C7, #2563EB) !important;
+            color: #FFFFFF !important;
+            font-weight: 600;
+        }
+        .badge-tier-oro {
+            background: linear-gradient(135deg, #F59E0B, #D97706) !important;
+            color: #FFFFFF !important;
+            font-weight: 600;
+        }
+        .badge-tier-plata {
+            background: linear-gradient(135deg, #64748B, #475569) !important;
+            color: #FFFFFF !important;
+            font-weight: 600;
+        }
+        .badge-tier-bronce {
+            background: linear-gradient(135deg, #B45309, #78350F) !important;
+            color: #FFFFFF !important;
+            font-weight: 600;
+        }
+        .podio-card {
+            border-radius: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #FFFFFF;
+        }
+        .podio-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(18, 53, 91, 0.08);
+        }
+        .podio-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.15rem;
+        }
+
         /* KPI Cards */
         .kpi-card {
             border: none;
@@ -222,7 +302,7 @@
             vertical-align: middle;
         }
 
-        /* Vistas Dinámicas */
+        /* Vistas Dinamicas */
         .spa-view {
             display: none;
             animation: fadeIn 0.2s ease-in-out;
@@ -237,14 +317,864 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ========================================================
+           SISTEMA RESPONSIVE Y CAJON OFFCANVAS PARA DISPOSITIVOS MOVILES
+           ======================================================== */
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1045;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.28s ease, visibility 0.28s ease;
+        }
+
+        #wrapper.toggled .sidebar-backdrop {
+            opacity: 1;
+            visibility: visible;
+        }
+
         @media (max-width: 991.98px) {
             #sidebar-wrapper {
-                margin-left: calc(-1 * var(--sidebar-width));
                 position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
                 height: 100vh;
+                height: 100dvh;
+                z-index: 1050;
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 4px 0 25px rgba(0, 0, 0, 0.25);
+                margin-left: 0 !important;
             }
+
             #wrapper.toggled #sidebar-wrapper {
-                margin-left: 0;
+                transform: translateX(0);
+                margin-left: 0 !important;
+            }
+
+            #page-content-wrapper {
+                padding-bottom: 74px; /* Margen para no tapar contenido con la barra inferior */
+            }
+        }
+
+        @media (min-width: 992px) {
+            #wrapper.toggled #sidebar-wrapper {
+                margin-left: calc(-1 * var(--sidebar-width));
+            }
+        }
+
+        /* Barra de Navegación Inferior (Mobile Bottom Navigation) */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(62px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(226, 232, 240, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1040;
+            box-shadow: 0 -4px 16px rgba(18, 53, 91, 0.06);
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: #64748B;
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 500;
+            background: none;
+            border: none;
+            padding: 4px 0;
+            transition: color 0.15s ease, transform 0.15s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mobile-nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .mobile-nav-item.active,
+        .mobile-nav-item:hover {
+            color: var(--brand-accent);
+        }
+
+        .mobile-nav-item.active i {
+            color: var(--brand-accent);
+            transform: scale(1.1);
+        }
+
+        /* Evitar zoom automático indeseado en Safari iOS y optimizar tablas en móviles */
+        @media (max-width: 768px) {
+            input, select, textarea, .form-control, .form-select {
+                font-size: 16px !important;
+            }
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+            }
+            .table > :not(caption) > * > * {
+                padding: 0.65rem 0.6rem;
+                font-size: 0.84rem;
+            }
+            .table th {
+                font-size: 0.76rem;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .top-navbar {
+                padding: 0.65rem 1rem;
+            }
+            #pageTitleHeader {
+                font-size: 1rem;
+                max-width: 170px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .kpi-card {
+                padding: 0.85rem !important;
+            }
+            .kpi-card h4 {
+                font-size: 1.35rem !important;
+            }
+            .kpi-card small {
+                font-size: 0.72rem !important;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .kpi-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 1.15rem;
+            }
+            /* Modal Bottom-Sheet en Smartphones */
+            .modal-dialog {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+            .modal-content {
+                border-radius: 16px !important;
+            }
+            .modal-header {
+                padding: 1rem 1.25rem !important;
+            }
+            .modal-body {
+                padding: 1.25rem 1rem !important;
+            }
+            .modal-footer {
+                padding: 0.85rem 1rem !important;
+                flex-direction: column-reverse;
+                gap: 0.5rem;
+            }
+            .modal-footer > * {
+                width: 100%;
+                margin: 0 !important;
+            }
+            /* Banner de Bienvenida móvil */
+            .banner-bienvenida-titulo {
+                font-size: 1.35rem !important;
+            }
+        }
+
+        /* ========================================================
+           SISTEMA DE DISENO MODERNO PARA VENTANAS EMERGENTES (MODALES)
+           ======================================================== */
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.65) !important;
+            backdrop-filter: blur(8px) saturate(180%);
+            -webkit-backdrop-filter: blur(8px) saturate(180%);
+        }
+
+        .modal.fade .modal-dialog {
+            transform: scale(0.95) translateY(-14px);
+            transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-content {
+            border-radius: 20px !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            box-shadow: 0 25px 60px -15px rgba(18, 53, 91, 0.25), 0 0 1px 1px rgba(18, 53, 91, 0.05) !important;
+            overflow: hidden;
+            background-color: #FFFFFF;
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid #F1F5F9;
+            position: relative;
+        }
+
+        .modal-header.bg-primary {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary)) !important;
+            color: #FFFFFF !important;
+            border-bottom: none;
+        }
+
+        .modal-header.bg-danger {
+            background: linear-gradient(135deg, #DC2626, #EF4444) !important;
+            color: #FFFFFF !important;
+            border-bottom: none;
+        }
+
+        .modal-header.bg-info {
+            background: linear-gradient(135deg, #0284C7, #0EA5E9) !important;
+            color: #FFFFFF !important;
+            border-bottom: none;
+        }
+
+        .modal-header.bg-secondary {
+            background: linear-gradient(135deg, #334155, #475569) !important;
+            color: #FFFFFF !important;
+            border-bottom: none;
+        }
+
+        .modal-header.bg-dark {
+            background: linear-gradient(135deg, #0F172A, #1E293B) !important;
+            color: #FFFFFF !important;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .btn-close {
+            opacity: 0.75;
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            padding: 0.6rem;
+            background-size: 0.75rem;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .btn-close-white:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 1.75rem !important;
+            color: #334155;
+        }
+
+        .modal-section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748B;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .modal-section-card {
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 1.25rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .modal-section-card:hover {
+            border-color: #CBD5E1;
+        }
+
+        .modal-body .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.35rem;
+        }
+
+        .modal-body .form-control,
+        .modal-body .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #E2E8F0;
+            padding: 0.65rem 0.95rem;
+            font-size: 0.925rem;
+            color: #1E293B;
+            background-color: #FFFFFF;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-body .form-control:focus,
+        .modal-body .form-select:focus {
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 3.5px rgba(34, 166, 168, 0.16);
+            background-color: #FFFFFF;
+        }
+
+        .modal-body .form-control::placeholder {
+            color: #94A3B8;
+            font-size: 0.88rem;
+        }
+
+        .modal-body .input-group-text {
+            border: 1.5px solid #E2E8F0;
+            border-right: none;
+            color: #64748B;
+        }
+
+        .modal-body .input-group > :first-child {
+            border-top-left-radius: 10px !important;
+            border-bottom-left-radius: 10px !important;
+        }
+
+        .modal-body .input-group > :last-child {
+            border-top-right-radius: 10px !important;
+            border-bottom-right-radius: 10px !important;
+        }
+
+        .modal-body .input-group > :not(:first-child):not(:last-child) {
+            border-radius: 0 !important;
+        }
+
+        .modal-footer {
+            padding: 1.15rem 1.75rem !important;
+            background-color: #F8FAFC !important;
+            border-top: 1px solid #E2E8F0 !important;
+            gap: 0.75rem;
+        }
+
+        .modal-footer .btn {
+            padding: 0.55rem 1.35rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-footer .btn-secondary {
+            background-color: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            color: #475569;
+        }
+
+        .modal-footer .btn-secondary:hover {
+            background-color: #F1F5F9;
+            border-color: #CBD5E1;
+            color: #1E293B;
+        }
+
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            border: none;
+            color: #FFFFFF;
+            box-shadow: 0 3px 10px rgba(18, 53, 91, 0.22);
+        }
+
+        .modal-footer .btn-primary:hover {
+            background: linear-gradient(135deg, #0e2947, #175a82);
+            box-shadow: 0 5px 15px rgba(18, 53, 91, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .modal-footer .btn-danger {
+            background: linear-gradient(135deg, #DC2626, #EF4444);
+            border: none;
+            box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25);
+            color: #FFFFFF;
+        }
+
+        .modal-footer .btn-danger:hover {
+            background: linear-gradient(135deg, #B91C1C, #DC2626);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .modal-footer .btn-success {
+            background: linear-gradient(135deg, #059669, #10B981);
+            border: none;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+            color: #FFFFFF;
+        }
+
+        .modal-footer .btn-success:hover {
+            background: linear-gradient(135deg, #047857, #059669);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .profile-hero-card {
+            background: linear-gradient(135deg, #0F2B48, #1E6F9F);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-hero-card::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(34, 166, 168, 0.35) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .profile-avatar-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-accent), #38BDF8);
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .profile-chip-card {
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            height: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .profile-chip-card:hover {
+            border-color: var(--brand-accent);
+            box-shadow: 0 4px 12px rgba(18, 53, 91, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .profile-chip-card .chip-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #64748B;
+            margin-bottom: 0.2rem;
+        }
+
+        .profile-chip-card .chip-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        .entity-selected-card {
+            border-radius: 12px !important;
+            border: 1.5px solid !important;
+            transition: all 0.2s ease;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        /* Cabecera desplegable interactiva */
+        .card-header-collapsible {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .card-header-collapsible:hover {
+            background-color: rgba(18, 53, 91, 0.16) !important;
+        }
+
+        .card-header-collapsible .bi-chevron-down {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-header-collapsible[aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        /* ========================================================
+           ESTILOS ASISTENTE INTELIGENTE POLITO (IA)
+           ======================================================== */
+        .fab-asistente-ia {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 2.5px solid var(--brand-accent);
+            box-shadow: 0 8px 24px rgba(34, 166, 168, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1035;
+            cursor: pointer;
+            padding: 0;
+            overflow: visible;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .fab-asistente-ia .fab-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .fab-asistente-ia .fab-status-badge {
+            position: absolute;
+            bottom: 1px;
+            right: 1px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+            animation: pulseStatus 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseStatus {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.85; }
+        }
+
+        .fab-asistente-ia:hover {
+            transform: scale(1.12) translateY(-3px);
+            box-shadow: 0 12px 30px rgba(34, 166, 168, 0.65);
+        }
+
+        .fab-asistente-ia:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 991.98px) {
+            .fab-asistente-ia {
+                bottom: 82px; /* Sobre la barra inferior móvil */
+                right: 16px;
+                width: 52px;
+                height: 52px;
+            }
+        }
+
+        .chat-ia-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: #F8FAFC;
+        }
+
+        .chat-ia-mensajes {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background-color: #F8FAFC;
+        }
+
+        .chat-bubble {
+            max-width: 90%;
+            padding: 0.85rem 1.15rem;
+            border-radius: 16px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble-user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+            color: #FFFFFF;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 3px 10px rgba(13, 110, 253, 0.22);
+        }
+
+        .chat-bubble-bot {
+            align-self: flex-start;
+            background: #FFFFFF;
+            color: #1E293B;
+            border: 1px solid #E2E8F0;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .chat-bubble-bot table {
+            width: 100%;
+            margin: 0.65rem 0;
+            font-size: 0.82rem;
+            border-collapse: collapse;
+        }
+
+        .chat-bubble-bot th,
+        .chat-bubble-bot td {
+            padding: 0.35rem 0.5rem;
+            border: 1px solid #E2E8F0;
+        }
+
+        .chat-bubble-bot th {
+            background-color: #F1F5F9;
+            color: #0F172A;
+            font-weight: 600;
+        }
+
+        .chat-bubble-bot pre {
+            background-color: #0F172A;
+            color: #38BDF8;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin: 0.5rem 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-chip {
+            background-color: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #475569;
+            padding: 0.4rem 0.85rem;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .chat-chip:hover {
+            border-color: var(--brand-accent);
+            color: var(--brand-accent);
+            background-color: #F0FDFA;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(34, 166, 168, 0.15);
+        }
+
+        .chat-typing-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--brand-accent);
+            animation: typingBounce 1.4s infinite ease-in-out both;
+            margin: 0 1px;
+        }
+        .chat-typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .chat-typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* ========================================================
+           POLITO SIDEKICK (MASCASCOTA FLOTANTE AL COSTADO DEL CHAT)
+           ======================================================== */
+        #offcanvasChatIa {
+            overflow: visible !important;
+        }
+
+        .polito-sidekick-container {
+            position: absolute;
+            left: -184px;
+            bottom: 24px;
+            width: 170px;
+            text-align: center;
+            z-index: 1070;
+            pointer-events: auto;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .polito-sidekick-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .polito-speech-bubble {
+            background: #FFFFFF;
+            color: #0F172A;
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 7px 11px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: inline-block;
+            max-width: 165px;
+            border: 1px solid #CBD5E1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            position: relative;
+            line-height: 1.25;
+            animation: floatSpeech 3.5s ease-in-out infinite;
+            word-wrap: break-word;
+        }
+
+        .polito-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0;
+            border-style: solid;
+            border-color: #FFFFFF transparent;
+            display: block;
+            width: 0;
+        }
+
+        .polito-sidekick-avatar {
+            width: 100%;
+            max-width: 160px;
+            height: auto;
+            filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.28));
+            transition: transform 0.25s ease, filter 0.25s ease;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .polito-sidekick-avatar:hover {
+            transform: scale(1.08) translateY(-4px);
+            filter: drop-shadow(0 16px 26px rgba(34, 166, 168, 0.45));
+        }
+
+        .polito-sidekick-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #12355B 0%, #0d2744 100%);
+            color: #FFFFFF;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            margin-top: -6px;
+            position: relative;
+            letter-spacing: 0.04em;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            border: 1.5px solid #FFFFFF;
+        }
+
+        .polito-pulse {
+            animation: politoPulse 1.5s infinite ease-in-out;
+        }
+
+        .polito-bounce {
+            animation: politoBounce 0.85s cubic-bezier(0.28, 0.84, 0.42, 1);
+        }
+
+        .polito-shake {
+            animation: politoShake 0.65s ease-in-out;
+        }
+
+        @keyframes politoPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 12px 22px rgba(34, 166, 168, 0.5)); }
+        }
+
+        @keyframes politoBounce {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(-16px) scale(1.06); filter: drop-shadow(0 18px 24px rgba(245, 158, 11, 0.5)); }
+            50% { transform: translateY(0) scale(0.98); }
+            70% { transform: translateY(-6px) scale(1.02); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        @keyframes politoShake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-6px) rotate(-4deg); filter: drop-shadow(0 10px 18px rgba(239, 68, 68, 0.4)); }
+            40% { transform: translateX(6px) rotate(4deg); }
+            60% { transform: translateX(-4px) rotate(-2deg); }
+            80% { transform: translateX(4px) rotate(2deg); }
+        }
+
+        @keyframes floatSpeech {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @media (max-width: 767.98px) {
+            .polito-sidekick-container {
+                position: relative !important;
+                left: auto !important;
+                bottom: auto !important;
+                width: 100% !important;
+                padding: 8px 12px;
+                background: #F1F5F9;
+                border-bottom: 1px solid #E2E8F0;
+            }
+            .polito-sidekick-card {
+                flex-direction: row;
+                justify-content: center;
+                gap: 10px;
+            }
+            .polito-sidekick-avatar {
+                max-height: 55px;
+                width: auto;
+            }
+            .polito-speech-bubble {
+                margin-bottom: 0;
+                font-size: 0.72rem;
+                max-width: 220px;
+                animation: none;
+            }
+            .polito-speech-bubble::after {
+                display: none;
+            }
+            .polito-sidekick-badge {
+                display: none;
             }
         }
     </style>
@@ -253,31 +1183,28 @@
 
 <div id="wrapper">
 
+    <!-- Backdrop overlay para cerrar drawer móvil al pulsar afuera -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop d-lg-none"></div>
+
     <!-- ========================================================
-         SIDEBAR LATERAL CON NAVEGACIÓN FUNCIONAL
+         SIDEBAR LATERAL CON NAVEGACION FUNCIONAL
          ======================================================== -->
     <aside id="sidebar-wrapper">
-        <a href="#dashboard" class="sidebar-brand sidebar-nav-item" data-view="view-dashboard">
-            <div class="logo-icon">
-                <i class="bi bi-robot"></i>
-            </div>
-            <div>
-                <span class="d-block lh-1">Robo_Gest</span>
-                <small class="text-white-50" style="font-size: 0.72rem; font-weight: 400;">Club de Robótica FP-UNE</small>
-            </div>
-        </a>
-
-        <!-- Resumen de Usuario en Sidebar -->
-        <div class="px-3 py-3 border-bottom border-white-10 d-flex align-items-center gap-2" style="background-color: rgba(0,0,0,0.12);">
-            <div class="user-avatar-circle" id="sidebarAvatar">U</div>
-            <div class="overflow-hidden">
-                <div class="text-white text-truncate fw-semibold" id="sidebarUserName" style="font-size: 0.9rem;">Cargando...</div>
-                <span class="badge" id="sidebarUserRoleBadge" style="font-size: 0.68rem;">...</span>
-            </div>
+        <div class="d-flex align-items-center justify-content-between border-bottom" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+            <a href="#dashboard" class="sidebar-brand sidebar-nav-item border-bottom-0 flex-grow-1" data-view="view-dashboard">
+                <div class="logo-icon">
+                    <img src="assets/images/brand/logo_icono.png" alt="Logo Club" class="img-fluid">
+                </div>
+                <div>
+                    <span class="d-block lh-1">Robo_Gest</span>
+                    <small class="text-white-50" style="font-size: 0.72rem; font-weight: 400;">Club de Robotica FP-UNE</small>
+                </div>
+            </a>
+            <button type="button" class="btn-close btn-close-white d-lg-none me-3" id="btnSidebarClose" aria-label="Cerrar menú"></button>
         </div>
 
         <ul class="sidebar-nav">
-            <!-- Sección General -->
+            <!-- Seccion General -->
             <li class="sidebar-heading">Principal</li>
             <li class="nav-item">
                 <a href="#dashboard" class="nav-link active sidebar-nav-item" data-view="view-dashboard" id="navDashboard">
@@ -288,7 +1215,7 @@
             <li class="nav-item">
                 <a href="#prestamos" class="nav-link sidebar-nav-item" data-view="view-prestamos" id="navMisPrestamos">
                     <i class="bi bi-box-seam"></i>
-                    <span>Préstamos y Solicitudes</span>
+                    <span>Prestamos y Solicitudes</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -298,27 +1225,32 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#asistencia" class="nav-link sidebar-nav-item" data-view="view-asistencia" id="navAsistencia">
-                    <i class="bi bi-person-check"></i>
-                    <span>Registro Asistencia (RFID)</span>
+                <a href="#proyectos" class="nav-link sidebar-nav-item" data-view="view-proyectos" id="navProyectos">
+                    <i class="bi bi-kanban"></i>
+                    <span>Gestion de Proyectos</span>
                 </a>
             </li>
-
-            <!-- Sección Directiva y Administración (Restringida por Rol) -->
+            <!-- Seccion Directiva y Administracion (Restringida por Rol) -->
             <li class="sidebar-heading role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
-                Gestión Directiva
+                Gestion Directiva
+            </li>
+            <li class="nav-item role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
+                <a href="#asistencia" class="nav-link sidebar-nav-item" data-view="view-asistencia" id="navAsistencia">
+                    <i class="bi bi-person-check"></i>
+                    <span>Control Asistencias (IoT)</span>
+                </a>
             </li>
             <li class="nav-item role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
                 <a href="#aprobar-prestamos" class="nav-link sidebar-nav-item" data-view="view-aprobar-prestamos" id="navAprobarPrestamos">
                     <i class="bi bi-shield-check"></i>
-                    <span>Aprobar Préstamos</span>
+                    <span>Aprobar Prestamos</span>
                     <span class="badge bg-danger rounded-pill ms-auto" id="pendingLoansBadge" style="display: none;">0</span>
                 </a>
             </li>
             <li class="nav-item role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
                 <a href="#integrantes" class="nav-link sidebar-nav-item" data-view="view-integrantes" id="navIntegrantes">
                     <i class="bi bi-people"></i>
-                    <span>Padrón de Integrantes</span>
+                    <span>Padron de Integrantes</span>
                 </a>
             </li>
         </ul>
@@ -326,9 +1258,9 @@
         <div class="sidebar-footer">
             <div class="d-flex align-items-center justify-content-between">
                 <a href="index.html" class="text-white-50 text-decoration-none small d-flex align-items-center gap-1">
-                    <i class="bi bi-globe"></i> Portal Público
+                    <i class="bi bi-globe"></i> Portal Publico
                 </a>
-                <button type="button" class="btn btn-sm btn-outline-light border-0" id="btnSidebarLogout" title="Cerrar sesión">
+                <button type="button" class="btn btn-sm btn-outline-light border-0" id="btnSidebarLogout" title="Cerrar sesion">
                     <i class="bi bi-box-arrow-right"></i>
                 </button>
             </div>
@@ -336,7 +1268,7 @@
     </aside>
 
     <!-- ========================================================
-         ÁREA DE CONTENIDO PRINCIPAL (SPA VIEWS)
+         AREA DE CONTENIDO PRINCIPAL (SPA VIEWS)
          ======================================================== -->
     <div id="page-content-wrapper">
 
@@ -369,11 +1301,12 @@
                             <span class="fw-semibold text-truncate d-block" id="dropdownUserEmail">correo@fpune.edu.py</span>
                         </li>
                         <li><a class="dropdown-item py-2 sidebar-nav-item" data-view="view-dashboard" href="#dashboard"><i class="bi bi-grid-1x2 me-2"></i> Mi Panel</a></li>
-                        <li><a class="dropdown-item py-2" href="index.html"><i class="bi bi-house me-2"></i> Ir al Portal Público</a></li>
+                        <li><button class="dropdown-item py-2" type="button" id="btnAbrirMiPerfil"><i class="bi bi-person-gear me-2"></i> Mi Perfil</button></li>
+                        <li><a class="dropdown-item py-2" href="index.html"><i class="bi bi-house me-2"></i> Ir al Portal Publico</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <button class="dropdown-item py-2 text-danger" type="button" id="btnTopbarLogout">
-                                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesion
                             </button>
                         </li>
                     </ul>
@@ -381,40 +1314,42 @@
             </div>
         </header>
 
-        <div class="container-fluid px-4 pt-3" id="alertContainer"></div>
+        <div class="container-fluid px-3 px-sm-4 pt-3" id="alertContainer"></div>
 
-        <main class="container-fluid px-4 py-3 flex-grow-1">
+        <main class="container-fluid px-3 px-sm-4 py-3 flex-grow-1">
 
             <!-- ====================================================
                  VISTA 1: DASHBOARD / RESUMEN GENERAL
                  ==================================================== -->
             <section id="view-dashboard" class="spa-view active-view">
                 <!-- Banner de Bienvenida -->
-                <div class="card border-0 rounded-4 mb-4 text-white shadow-sm overflow-hidden" style="background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);">
-                    <div class="card-body p-4 position-relative">
+                <div class="card border-0 rounded-4 mb-3 mb-md-4 text-white shadow-sm overflow-hidden" style="background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);">
+                    <div class="card-body p-3 p-md-4 position-relative">
                         <div class="row align-items-center">
                             <div class="col-md-8">
                                 <span class="badge bg-white text-primary mb-2 px-3 py-1 fw-semibold" id="welcomeRoleBadge">MIEMBRO</span>
-                                <h3 class="fw-bold mb-1">¡Bienvenido/a, <span id="welcomeUserName">Integrante</span>! 👋</h3>
-                                <p class="mb-0 text-white-50">Sistema de Gestión del Club de Robótica (FP-UNE). Todos los módulos están conectados a MySQL en tiempo real.</p>
+                                <h3 class="banner-bienvenida-titulo fw-bold mb-0">Bienvenido/a, <span id="welcomeUserName">Integrante</span>!</h3>
                             </div>
-                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                 <div class="d-inline-flex flex-column align-items-md-end">
                                     <small class="text-white-50"><i class="bi bi-calendar3 me-1"></i> Fecha Actual</small>
-                                    <span class="fw-semibold" id="currentDateDisplay">Cargando...</span>
+                                    <span class="fw-semibold small" id="currentDateDisplay">Cargando...</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- KPI Cards -->
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-sm-6 col-xl-3">
+                <!-- Alerta Dinamica de Prestamos Vencidos / Por Vencer -->
+                <div id="alertaPrestamosVencidosDashboard" style="display: none;"></div>
+
+                <!-- KPI Cards (Grilla 2x2 en móviles, 4x1 en pantallas grandes) -->
+                <div class="row g-2 g-sm-3 mb-3 mb-md-4">
+                    <div class="col-6 col-xl-3">
                         <div class="card kpi-card h-100 p-3">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <small class="text-muted fw-medium d-block mb-1">Préstamos Registrados</small>
+                                    <small class="text-muted fw-medium d-block mb-1">Préstamos</small>
                                     <h4 class="fw-bold mb-0 text-primary" id="kpiPrestamosActivos">--</h4>
                                 </div>
                                 <div class="kpi-icon bg-primary-subtle text-primary">
@@ -424,25 +1359,41 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-6 col-xl-3 role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
                         <div class="card kpi-card h-100 p-3">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <small class="text-muted fw-medium d-block mb-1">Marcaciones Asistencia</small>
+                                    <small class="text-muted fw-medium d-block mb-1">Ingresos Hoy</small>
                                     <h4 class="fw-bold mb-0 text-success" id="kpiAsistenciasMes">--</h4>
                                 </div>
                                 <div class="kpi-icon bg-success-subtle text-success">
-                                    <i class="bi bi-person-check"></i>
+                                    <i class="bi bi-door-open"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6 col-xl-3">
+                    <!-- KPI Mis Horas (Solo Miembro) -->
+                    <div class="col-6 col-xl-3 role-restricted" data-allowed-roles="MIEMBRO">
                         <div class="card kpi-card h-100 p-3">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <small class="text-muted fw-medium d-block mb-1">Total de Materiales</small>
+                                    <small class="text-muted fw-medium d-block mb-1">Mis Horas Club</small>
+                                    <h4 class="fw-bold mb-0 text-success" id="kpiMiembroHorasTotales">--</h4>
+                                    <small class="text-muted" style="font-size: 0.72rem;" id="kpiMiembroHorasSub">Extensión FP-UNE</small>
+                                </div>
+                                <div class="kpi-icon bg-success-subtle text-success">
+                                    <i class="bi bi-stopwatch"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-xl-3">
+                        <div class="card kpi-card h-100 p-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small class="text-muted fw-medium d-block mb-1">Materiales</small>
                                     <h4 class="fw-bold mb-0 text-info" id="kpiComponentesStock">--</h4>
                                 </div>
                                 <div class="kpi-icon bg-info-subtle text-info">
@@ -452,11 +1403,11 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-6 col-xl-3 role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
                         <div class="card kpi-card h-100 p-3">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <small class="text-muted fw-medium d-block mb-1">Padrón de Miembros</small>
+                                    <small class="text-muted fw-medium d-block mb-1">Miembros</small>
                                     <h4 class="fw-bold mb-0 text-warning" id="kpiTotalIntegrantes">--</h4>
                                 </div>
                                 <div class="kpi-icon bg-warning-subtle text-warning">
@@ -465,16 +1416,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- KPI Mis Sesiones (Solo Miembro) -->
+                    <div class="col-6 col-xl-3 role-restricted" data-allowed-roles="MIEMBRO">
+                        <div class="card kpi-card h-100 p-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small class="text-muted fw-medium d-block mb-1">Mis Sesiones</small>
+                                    <h4 class="fw-bold mb-0 text-warning" id="kpiMiembroSesiones">--</h4>
+                                    <small class="text-muted" style="font-size: 0.72rem;" id="kpiMiembroSesionesSub">Talleres realizados</small>
+                                </div>
+                                <div class="kpi-icon bg-warning-subtle text-warning">
+                                    <i class="bi bi-mortarboard"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tablas de Actividad Reciente en el Dashboard Principal -->
                 <div class="row g-4 mb-4">
-                    <!-- Resumen de Préstamos Activos -->
-                    <div class="col-12 col-xl-7">
+                    <!-- Resumen de Prestamos Activos -->
+                    <div class="col-12 col-xl-7" id="dashboardWidgetPrestamos">
                         <div class="card table-card h-100">
                             <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
                                 <h6 class="fw-bold mb-0 text-dark">
-                                    <i class="bi bi-box-seam text-primary me-2"></i>Préstamos Activos (Resumen)
+                                    <i class="bi bi-box-seam text-primary me-2"></i>Prestamos Activos (Resumen)
                                 </h6>
                                 <a href="#prestamos" class="btn btn-sm btn-link text-decoration-none p-0 fw-semibold sidebar-nav-item" data-view="view-prestamos">
                                     Ver todos <i class="bi bi-arrow-right"></i>
@@ -492,7 +1459,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tablaDashboardPrestamos">
-                                            <tr><td colspan="4" class="text-center py-3 text-muted">Cargando préstamos desde MySQL...</td></tr>
+                                            <tr><td colspan="4" class="text-center py-3 text-muted">Cargando prestamos...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -501,11 +1468,11 @@
                     </div>
 
                     <!-- Resumen de Asistencias RFID -->
-                    <div class="col-12 col-xl-5">
+                    <div class="col-12 col-xl-5 role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" id="dashboardWidgetAsistencias">
                         <div class="card table-card h-100">
                             <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
                                 <h6 class="fw-bold mb-0 text-dark">
-                                    <i class="bi bi-clock-history text-success me-2"></i>Últimas Asistencias IoT
+                                    <i class="bi bi-door-open text-success me-2"></i>Ingresos del Día
                                 </h6>
                                 <a href="#asistencia" class="btn btn-sm btn-link text-decoration-none p-0 fw-semibold sidebar-nav-item" data-view="view-asistencia">
                                     Ver todas <i class="bi bi-arrow-right"></i>
@@ -522,7 +1489,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tablaDashboardAsistencias">
-                                            <tr><td colspan="3" class="text-center py-3 text-muted">Cargando marcaciones desde MySQL...</td></tr>
+                                            <tr><td colspan="3" class="text-center py-3 text-muted">Cargando ingresos del día...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -531,7 +1498,134 @@
                     </div>
                 </div>
 
-                <!-- Acceso Rápido Directiva -->
+                <!-- ========================================================
+                     WIDGET: MIS PROYECTOS ACTIVOS (PROYECTOS PROPIOS)
+                     ======================================================== -->
+                <div class="card table-card mb-4 shadow-sm" id="widgetMisProyectosDashboard">
+                    <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-rocket-takeoff-fill text-primary me-2"></i>Mis Proyectos Activos
+                            </h5>
+                            <small class="text-muted">Proyectos en desarrollo en los cuales participas como integrante del equipo</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-light text-dark border px-3 py-2" id="badgeContadorMisProyectos">
+                                <i class="bi bi-kanban text-primary me-1"></i> Cargando proyectos...
+                            </span>
+                            <a href="#proyectos" class="btn btn-sm btn-link text-decoration-none fw-semibold p-0 sidebar-nav-item" data-view="view-proyectos">
+                                Ver todos <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0 pb-3">
+                        <div class="row g-3" id="contenedorMisProyectosCards">
+                            <div class="col-12 text-center py-4 text-muted">
+                                <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div> Cargando tus proyectos...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================
+                     WIDGET 1: CUADRO DE HONOR Y TIER LIST (ADMIN Y DIRECTIVA)
+                     ======================================================== -->
+                <div class="card table-card mb-4 shadow-sm role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" id="widgetCuadroHonor">
+                    <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-trophy-fill text-warning me-2"></i>Cuadro de Honor & Tier de Miembros
+                            </h5>
+                            <small class="text-muted" id="subtituloCuadroHonor">Ranking oficial de horas acumuladas en el taller de robótica</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-light text-dark border px-3 py-2" id="badgeTotalHorasLaboratorio">
+                                <i class="bi bi-clock-history text-primary me-1"></i> Calculando horas...
+                            </span>
+                            <button class="btn btn-sm btn-outline-primary" id="btnExportarRankingCSV" title="Descargar Ranking de Horas en CSV / Excel">
+                                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0 pb-3">
+                        <!-- Podio Top 3 -->
+                        <div class="row g-3 mb-4" id="contenedorPodioHonor">
+                            <!-- Inyectado dinámicamente: 1º Oro, 2º Plata, 3º Bronce -->
+                        </div>
+
+                        <!-- Buscador y Tabla de Clasificación Completa -->
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <h6 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-list-ol text-primary me-1"></i> Clasificación General de Miembros
+                            </h6>
+                            <div class="input-group input-group-sm" style="max-width: 280px;">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0" id="inputBuscarRanking" placeholder="Filtrar por nombre o carrera...">
+                            </div>
+                        </div>
+
+                        <div class="table-responsive rounded-3 border">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="ps-3" style="width: 70px;">Puesto</th>
+                                        <th scope="col">Integrante</th>
+                                        <th scope="col">Carrera</th>
+                                        <th scope="col" class="text-center">Horas Totales</th>
+                                        <th scope="col" class="text-center">Sesiones</th>
+                                        <th scope="col" class="text-center">Nivel / Tier</th>
+                                        <th scope="col" class="text-center pe-3">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaRankingHoras">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Cargando clasificación de horas...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================
+                     WIDGET 2: MI PROGRESO DE HORAS Y EXTENSIÓN (MIEMBRO)
+                     ======================================================== -->
+                <div class="card table-card mb-4 shadow-sm role-restricted" data-allowed-roles="MIEMBRO" id="widgetMiProgresoHoras">
+                    <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-mortarboard-fill text-primary me-2"></i>Mi Progreso de Horas en el Club (Extensión FP-UNE)
+                            </h5>
+                            <small class="text-muted">Horas de taller acreditables para Créditos de Extensión Universitaria</small>
+                        </div>
+                        <div id="miEstadoPresenciaBadge">
+                            <span class="badge bg-light text-secondary border px-3 py-2"><i class="bi bi-circle me-1"></i>Consultando...</span>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0 pb-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4 text-center border-end-md pb-3 pb-md-0">
+                                <div class="display-5 fw-bold text-primary mb-1" id="miContadorHorasGrande">0.0 <span class="fs-6 fw-normal text-muted">hrs</span></div>
+                                <div class="mb-2">
+                                    <span class="badge badge-tier-bronce px-3 py-1 fs-6" id="miTierBadgeGrande">Tier Bronce</span>
+                                </div>
+                                <small class="text-muted d-block" id="miSesionesTexto">0 sesiones registradas en el laboratorio</small>
+                            </div>
+                            <div class="col-md-8 ps-md-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold small text-dark" id="miProgresoTextoTier">Progreso hacia el siguiente Tier</span>
+                                    <span class="fw-bold small text-primary" id="miProgresoPorcentaje">0%</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 10px; border-radius: 6px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="miBarraProgresoTier" role="progressbar" style="width: 0%;"></div>
+                                </div>
+                                <p class="text-muted small mb-0" id="miProximoTierConsejo">
+                                    <i class="bi bi-info-circle me-1 text-primary"></i> Asiste a las sesiones del laboratorio y marca tu entrada y salida con la tarjeta RFID para acumular horas de extensión.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acceso Rapido Directiva -->
                 <div class="card border-warning border-opacity-50 rounded-4 mb-4 shadow-sm role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" style="background-color: #FFFBEB;">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
@@ -540,8 +1634,8 @@
                                     <i class="bi bi-shield-check"></i>
                                 </div>
                                 <div>
-                                    <h5 class="fw-bold text-dark mb-1">Panel de Aprobación de Préstamos</h5>
-                                    <p class="text-muted mb-0 small">Hay solicitudes de materiales pendientes de revisión transaccional.</p>
+                                    <h5 class="fw-bold text-dark mb-1">Panel de Aprobacion de Prestamos</h5>
+                                    <p class="text-muted mb-0 small">Hay solicitudes de materiales pendientes de revision transaccional.</p>
                                 </div>
                             </div>
                             <button class="btn btn-warning text-dark fw-semibold px-4 flex-shrink-0 sidebar-nav-item" data-view="view-aprobar-prestamos">
@@ -553,19 +1647,55 @@
             </section>
 
             <!-- ====================================================
-                 VISTA 2: PRÉSTAMOS Y SOLICITUDES
+                 VISTA 2: PRESTAMOS Y SOLICITUDES
                  ==================================================== -->
             <section id="view-prestamos" class="spa-view">
                 <div class="card table-card mb-4">
-                    <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <div>
-                            <h5 class="fw-bold mb-0"><i class="bi bi-box-seam text-primary me-2"></i>Gestión de Préstamos</h5>
-                            <small class="text-muted">Listado oficial de préstamos registrados en MySQL</small>
+                    <div class="card-header bg-white py-3 border-0">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0"><i class="bi bi-box-seam text-primary me-2"></i>Gestion de Prestamos</h5>
+                                <small class="text-muted">Registro oficial y ciclo de vida de prestamos de componentes</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border py-2 px-3" id="contadorPrestamos">
+                                    <i class="bi bi-list-check me-1"></i> Cargando prestamos...
+                                </span>
+                                <button class="btn btn-sm btn-primary fw-semibold" id="btnNuevoPrestamo">
+                                    <i class="bi bi-plus-circle me-1"></i> Nueva Solicitud
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" id="btnExportarPrestamosCSV" title="Exportar Préstamos a CSV / Excel">
+                                    <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exportar
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" id="btnRecargarPrestamos" title="Actualizar">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-primary" id="btnRecargarPrestamos">
-                                <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
-                            </button>
+                        <div class="bg-light p-2 rounded-3 border">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-7">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control" id="inputBuscarPrestamo" placeholder="Buscar por integrante, proyecto o descripcion...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select form-select-sm" id="filtroPrestamoEstado">
+                                        <option value="">Todos los estados</option>
+                                        <option value="SOLICITADO">SOLICITADO</option>
+                                        <option value="APROBADO">APROBADO</option>
+                                        <option value="EN_CURSO">EN_CURSO</option>
+                                        <option value="DEVUELTO">DEVUELTO</option>
+                                        <option value="RECHAZADO">RECHAZADO</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" id="btnLimpiarFiltrosPrestamo" title="Limpiar filtros">
+                                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -577,14 +1707,14 @@
                                         <th scope="col">Integrante</th>
                                         <th scope="col">Proyecto</th>
                                         <th scope="col">Materiales Solicitados</th>
-                                        <th scope="col">Fecha Solicitud / Límite</th>
+                                        <th scope="col">Devolucion Prevista</th>
                                         <th scope="col">Estado</th>
-                                        <th scope="col" class="text-end pe-4">Acción</th>
+                                        <th scope="col" class="text-end pe-4">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaPrestamosCompleta">
                                     <tr>
-                                        <td colspan="7" class="text-center py-4 text-muted">Cargando préstamos desde el backend...</td>
+                                        <td colspan="7" class="text-center py-4 text-muted">Cargando prestamos desde el backend...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -594,18 +1724,31 @@
             </section>
 
             <!-- ====================================================
-                 VISTA 3: APROBAR PRÉSTAMOS (DIRECTIVA/ADMIN)
+                 VISTA 3: APROBAR PRESTAMOS (DIRECTIVA/ADMIN)
                  ==================================================== -->
             <section id="view-aprobar-prestamos" class="spa-view role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
                 <div class="card table-card mb-4 border-warning border-opacity-25">
-                    <div class="card-header bg-warning bg-opacity-10 py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <div>
-                            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-shield-check text-warning me-2"></i>Aprobación Transaccional de Préstamos</h5>
-                            <small class="text-muted">Aplica bloqueo pesimista en base de datos para garantizar consistencia de stock</small>
+                    <div class="card-header bg-warning bg-opacity-10 py-3 border-0">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-shield-check text-warning me-2"></i>Aprobacion Transaccional de Prestamos</h5>
+                                <small class="text-muted">Aplica bloqueo pesimista en base de datos para garantizar consistencia de stock</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-white text-dark border py-2 px-3" id="contadorAprobaciones">
+                                    <i class="bi bi-hourglass-split text-warning me-1"></i> Pendientes
+                                </span>
+                                <button class="btn btn-sm btn-warning text-dark fw-semibold" id="btnRecargarAprobaciones">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Refrescar
+                                </button>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-warning text-dark fw-semibold" id="btnRecargarAprobaciones">
-                            <i class="bi bi-arrow-clockwise me-1"></i> Refrescar
-                        </button>
+                        <div class="bg-white p-2 rounded-3 border">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="inputBuscarAprobacion" placeholder="Filtrar solicitudes por solicitante o proyecto...">
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -616,9 +1759,9 @@
                                         <th scope="col">Solicitante</th>
                                         <th scope="col">Proyecto</th>
                                         <th scope="col">Detalle de Materiales</th>
-                                        <th scope="col">Fecha Devolución</th>
+                                        <th scope="col">Fecha Devolucion</th>
                                         <th scope="col">Estado</th>
-                                        <th scope="col" class="text-end pe-4">Acción Transaccional</th>
+                                        <th scope="col" class="text-end pe-4">Accion Transaccional</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaAprobarPrestamos">
@@ -637,16 +1780,56 @@
                  ==================================================== -->
             <section id="view-inventario" class="spa-view">
                 <div class="card table-card mb-4">
-                    <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <div>
-                            <h5 class="fw-bold mb-0"><i class="bi bi-cpu text-info me-2"></i>Inventario de Materiales y Equipos</h5>
-                            <small class="text-muted">Componentes registrados en el laboratorio de robótica</small>
+                    <div class="card-header bg-white py-3 border-0">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0"><i class="bi bi-cpu text-info me-2"></i>Inventario de Materiales y Equipos</h5>
+                                <small class="text-muted">Componentes registrados en el laboratorio de robotica</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border py-2 px-3" id="contadorMateriales">
+                                    <i class="bi bi-list-check me-1"></i> Cargando materiales...
+                                </span>
+                                <button class="btn btn-sm btn-info text-white fw-semibold role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" id="btnNuevoMaterial">
+                                    <i class="bi bi-plus-lg me-1"></i> Nuevo Material
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" id="btnGestionarCategorias" title="Ver Categorias">
+                                    <i class="bi bi-tags me-1"></i> Categorias
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" id="btnExportarInventarioCSV" title="Exportar Inventario a CSV / Excel">
+                                    <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exportar
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" id="btnRecargarInventario" title="Actualizar">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="text" class="form-control form-control-sm" id="inputBuscarMaterial" placeholder="Filtrar por nombre...">
-                            <button class="btn btn-sm btn-outline-info" id="btnRecargarInventario">
-                                <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
-                            </button>
+                        <div class="bg-light p-2 rounded-3 border">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-5">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control" id="inputBuscarMaterial" placeholder="Buscar por componente, marca o ubicacion...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select form-select-sm" id="filtroMaterialCategoria">
+                                        <option value="">Todas las categorias</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm" id="filtroMaterialStock">
+                                        <option value="">Todos los stocks</option>
+                                        <option value="disponible">Con stock (&gt; 0)</option>
+                                        <option value="agotado">Sin stock (= 0)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" id="btnLimpiarFiltrosMaterial" title="Limpiar filtros">
+                                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -656,16 +1839,90 @@
                                     <tr>
                                         <th scope="col" class="ps-4">ID</th>
                                         <th scope="col">Componente</th>
-                                        <th scope="col">Categoría</th>
+                                        <th scope="col">Categoria</th>
                                         <th scope="col">Marca / Modelo</th>
-                                        <th scope="col">Stock Total</th>
-                                        <th scope="col">Ubicación Física</th>
+                                        <th scope="col">Disponibilidad / Stock</th>
+                                        <th scope="col">Ubicacion Fisica</th>
                                         <th scope="col">Estado</th>
+                                        <th scope="col" class="text-end pe-4">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaInventario">
                                     <tr>
-                                        <td colspan="7" class="text-center py-4 text-muted">Cargando inventario desde MySQL...</td>
+                                        <td colspan="8" class="text-center py-4 text-muted">Cargando inventario...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ====================================================
+                 VISTA: GESTION DE PROYECTOS DEL CLUB
+                 ==================================================== -->
+            <section id="view-proyectos" class="spa-view">
+                <div class="card table-card mb-4">
+                    <div class="card-header bg-white py-3 border-0">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0"><i class="bi bi-kanban text-primary me-2"></i>Gestion de Proyectos</h5>
+                                <small class="text-muted">Iniciativas, prototipos y desarrollos activos del club de robotica</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border py-2 px-3" id="contadorProyectos">
+                                    <i class="bi bi-list-check me-1"></i> Cargando proyectos...
+                                </span>
+                                <button class="btn btn-sm btn-primary fw-semibold role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" id="btnNuevoProyecto" data-bs-toggle="modal" data-bs-target="#modalProyecto">
+                                    <i class="bi bi-plus-lg me-1"></i> Nuevo Proyecto
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" id="btnRecargarProyectos" title="Actualizar">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-light p-2 rounded-3 border">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-7">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control" id="inputBuscarProyecto" placeholder="Buscar por nombre o descripcion de proyecto...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select form-select-sm" id="filtroProyectoEstado">
+                                        <option value="">Todos los estados</option>
+                                        <option value="ACTIVO">ACTIVO</option>
+                                        <option value="PLANIFICADO">PLANIFICADO</option>
+                                        <option value="FINALIZADO">FINALIZADO</option>
+                                        <option value="PAUSADO">PAUSADO</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" id="btnLimpiarFiltrosProyecto" title="Limpiar filtros">
+                                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="ps-4">ID</th>
+                                        <th scope="col">Nombre del Proyecto</th>
+                                        <th scope="col">Descripcion</th>
+                                        <th scope="col">Fecha Inicio</th>
+                                        <th scope="col">Fecha Fin</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col" class="text-end pe-4">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaProyectos">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">Cargando proyectos...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -677,47 +1934,233 @@
             <!-- ====================================================
                  VISTA 5: REGISTRO DE ASISTENCIA (IoT RFID / ESP32)
                  ==================================================== -->
-            <section id="view-asistencia" class="spa-view">
-                <!-- Simulador de Marcación -->
-                <div class="card table-card mb-4 border-primary border-opacity-25">
-                    <div class="card-header bg-primary bg-opacity-10 py-3 border-0">
-                        <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-broadcast me-2"></i>Simulador de Marcación ESP32 / RFID</h5>
-                        <small class="text-muted">Envía UID de tarjeta NFC al endpoint <code>POST /api/asistencia/marcar</code></small>
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="formMarcacionRfid" class="row g-3 align-items-end">
-                            <div class="col-md-5">
-                                <label for="inputNfcUid" class="form-label fw-semibold small">UID de Tarjeta RFID</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                    <input type="text" class="form-control" id="inputNfcUid" placeholder="Ej: A1B2C3D4" required>
+            <section id="view-asistencia" class="spa-view role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
+                <!-- Marcador de Entrada y Asistencia Manual (Desplegable) -->
+                <div class="card table-card mb-4 border-primary border-opacity-25 shadow-sm">
+                    <div class="card-header bg-primary bg-opacity-10 py-3 border-0 card-header-collapsible" 
+                         role="button" 
+                         data-bs-toggle="collapse" 
+                         data-bs-target="#collapseMarcadorManual" 
+                         aria-expanded="false" 
+                         aria-controls="collapseMarcadorManual"
+                         id="headerMarcadorManual">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="modal-header-icon bg-primary text-white" style="width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-person-check-fill fs-5"></i>
                                 </div>
-                                <small class="text-muted">Prueba con: <code>A1B2C3D4</code> (Admin), <code>E5F6G7H8</code> (Directiva), <code>J9K0L1M2</code> (Miembro)</small>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <h5 class="fw-bold mb-0 text-primary">Marcador de Entrada y Asistencia Manual</h5>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25" id="badgeEstadoMarcadorColapso" style="font-size: 0.72rem;">Hacer clic para abrir</span>
+                                    </div>
+                                    <small class="text-muted">Registro manual por RFID con autocompletado o por Nombre, Cédula y Carrera</small>
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <label for="inputDispositivo" class="form-label fw-semibold small">Dispositivo IoT</label>
-                                <input type="text" class="form-control" id="inputDispositivo" value="ESP32_LAB_ROBOTICA" readonly>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="btnMarcarRfid">
-                                    <i class="bi bi-send me-1"></i> Enviar Marcación
+                            <div class="d-flex align-items-center gap-2 ms-auto">
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 py-2 px-3 fw-semibold d-none d-sm-inline-flex">
+                                    <i class="bi bi-broadcast me-1"></i> Sensor IoT ESP32 Sincronizado
+                                </span>
+                                <button class="btn btn-sm btn-outline-primary fw-semibold rounded-pill px-3 d-flex align-items-center gap-1" type="button" tabindex="-1">
+                                    <span id="textoBotonMarcadorColapso">Desplegar</span>
+                                    <i class="bi bi-chevron-down ms-1" id="iconoMarcadorColapso"></i>
                                 </button>
                             </div>
-                        </form>
-                        <div id="resultadoMarcacion" class="mt-3" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="collapse" id="collapseMarcadorManual">
+                        <div class="card-body p-3 p-md-4 border-top border-primary border-opacity-10">
+                            <form id="formMarcacionManual" autocomplete="off">
+                                <input type="hidden" id="manualIntegranteId" value="">
+
+                                <!-- Barra de Detección Rápida: RFID + Buscador de Integrantes -->
+                                <div class="row g-3 mb-3">
+                                    <!-- UID Tarjeta RFID -->
+                                    <div class="col-md-6">
+                                        <label for="inputManualNfcUid" class="form-label fw-semibold small d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-upc-scan text-primary me-1"></i> UID Tarjeta RFID / NFC <small class="text-muted fw-normal">(Opcional)</small></span>
+                                            <span id="badgeEstadoNfc" class="badge bg-light text-secondary border fw-normal" style="font-size: 0.72rem;">Escanea o escribe UID</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white"><i class="bi bi-credit-card-2-front"></i></span>
+                                            <input type="text" class="form-control font-monospace text-uppercase fw-semibold" id="inputManualNfcUid" placeholder="Ej: 40A5E219">
+                                            <button class="btn btn-outline-primary" type="button" id="btnCapturarRfidManual" title="Capturar tarjeta escaneada recientemente en el ESP32">
+                                                <i class="bi bi-broadcast me-1"></i><span class="d-none d-sm-inline">Capturar</span>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" type="button" id="btnLimpiarRfidManual" title="Limpiar UID">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                            Al ingresar un UID registrado, los datos se autocompletarán de inmediato.
+                                        </small>
+                                    </div>
+
+                                    <!-- Buscador Rápido de Integrante por Nombre o CI -->
+                                    <div class="col-md-6 position-relative">
+                                        <label class="form-label fw-semibold small d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-search text-primary me-1"></i> Buscar en Padrón <small class="text-muted fw-normal">(Por Nombre, CI o Carnet)</small></span>
+                                            <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.72rem;">Autocompletar</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white"><i class="bi bi-person-bounding-box"></i></span>
+                                            <input type="text" class="form-control" id="inputManualBuscarIntegrante" placeholder="Escribe el nombre o cédula...">
+                                        </div>
+                                        <div id="listaResultadosManual" class="list-group position-absolute w-100 shadow-lg mt-1 border rounded-3" style="max-height: 220px; overflow-y: auto; z-index: 1060; display: none; background: white;">
+                                        </div>
+                                        <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                            Selecciona un integrante para llenar todos los campos automáticamente.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Campos del Asistente (Editables o Autocompletados) -->
+                                <div class="p-3 bg-light rounded-3 border mb-3">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="inputManualNombre" class="form-label fw-semibold small">
+                                                Nombre y Apellido <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white"><i class="bi bi-person"></i></span>
+                                                <input type="text" class="form-control" id="inputManualNombre" placeholder="Ej: Carlos García" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="inputManualCi" class="form-label fw-semibold small">
+                                                Cédula de Identidad (CI) <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white"><i class="bi bi-card-heading"></i></span>
+                                                <input type="text" class="form-control" id="inputManualCi" placeholder="Ej: 4567890" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="selectManualCarrera" class="form-label fw-semibold small">Carrera Académica</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white"><i class="bi bi-mortarboard"></i></span>
+                                                <select class="form-select" id="selectManualCarrera">
+                                                    <option value="INGENIERIA_DE_SISTEMAS">Ingeniería de Sistemas</option>
+                                                    <option value="INGENIERIA_ELECTRICA">Ingeniería Eléctrica</option>
+                                                    <option value="ANALISIS_DE_SISTEMAS">Análisis de Sistemas</option>
+                                                    <option value="LICENCIATURA_EN_TURISMO">Licenciatura en Turismo</option>
+                                                    <option value="COLABORADOR" selected>Colaborador Externo / Otro</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Configuración y Envío de la Marcación -->
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label for="selectManualTipoMarcacion" class="form-label fw-semibold small">Tipo de Marcación</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white"><i class="bi bi-arrow-left-right"></i></span>
+                                            <select class="form-select fw-semibold" id="selectManualTipoMarcacion">
+                                                <option value="AUTO" selected>Automático (Entrada/Salida según historial)</option>
+                                                <option value="ENTRADA">Registrar ENTRADA</option>
+                                                <option value="SALIDA">Registrar SALIDA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="inputManualDispositivo" class="form-label fw-semibold small">Punto de Marcación / Dispositivo</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white"><i class="bi bi-laptop"></i></span>
+                                            <input type="text" class="form-control" id="inputManualDispositivo" value="REGISTRO_MANUAL_LAB" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-secondary w-50 py-2" id="btnLimpiarManual">
+                                            <i class="bi bi-eraser me-1"></i> Limpiar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary w-50 fw-semibold py-2" id="btnRegistrarManual">
+                                            <i class="bi bi-check2-circle me-1"></i> Registrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Mensaje de Feedback -->
+                            <div id="resultadoMarcacionManual" class="mt-3" style="display: none;"></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Historial de Marcaciones en Vivo -->
                 <div class="card table-card mb-4">
-                    <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
-                        <div>
-                            <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-secondary me-2"></i>Registro de Asistencias</h5>
-                            <small class="text-muted">Historial de marcaciones registradas en la base de datos</small>
+                    <div class="card-header bg-white py-3 border-0">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-secondary me-2"></i>Registro de Asistencias</h5>
+                                <small class="text-muted">Historial de marcaciones registradas en la base de datos</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border py-2 px-3" id="contadorAsistencias">
+                                    <i class="bi bi-list-check me-1"></i> Cargando marcaciones...
+                                </span>
+                                <button class="btn btn-sm btn-outline-success" id="btnExportarAsistenciasCSV" title="Exportar Reporte de Asistencias a CSV / Excel">
+                                    <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exportar Horas
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" id="btnRecargarAsistencias">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                                </button>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-outline-secondary" id="btnRecargarAsistencias">
-                            <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
-                        </button>
+                        <!-- Barra de Filtros Avanzada de Asistencia -->
+                        <div class="bg-light p-3 rounded-3 border">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="filtroAsistenciaTexto" class="form-label small fw-semibold text-muted mb-1">
+                                        <i class="bi bi-search me-1"></i>Buscar Integrante / Dispositivo
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="filtroAsistenciaTexto" placeholder="Nombre, carnet o dispositivo...">
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6">
+                                    <label for="filtroAsistenciaFecha" class="form-label small fw-semibold text-muted mb-1">
+                                        <i class="bi bi-calendar3 me-1"></i>Fecha Especifica
+                                    </label>
+                                    <input type="date" class="form-control form-control-sm" id="filtroAsistenciaFecha">
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6">
+                                    <label for="filtroAsistenciaHoraDesde" class="form-label small fw-semibold text-muted mb-1">
+                                        <i class="bi bi-clock me-1"></i>Hora Desde
+                                    </label>
+                                    <input type="time" class="form-control form-control-sm" id="filtroAsistenciaHoraDesde">
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6">
+                                    <label for="filtroAsistenciaHoraHasta" class="form-label small fw-semibold text-muted mb-1">
+                                        <i class="bi bi-clock-fill me-1"></i>Hora Hasta
+                                    </label>
+                                    <input type="time" class="form-control form-control-sm" id="filtroAsistenciaHoraHasta">
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6">
+                                    <label for="filtroAsistenciaTipo" class="form-label small fw-semibold text-muted mb-1">
+                                        <i class="bi bi-funnel me-1"></i>Tipo Marcacion
+                                    </label>
+                                    <select class="form-select form-select-sm" id="filtroAsistenciaTipo">
+                                        <option value="">Todos los tipos</option>
+                                        <option value="ENTRADA">Solo ENTRADA</option>
+                                        <option value="SALIDA">Solo SALIDA</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-12 text-end">
+                                    <button class="btn btn-sm btn-outline-danger w-100" id="btnLimpiarFiltrosAsistencia" title="Limpiar todos los filtros">
+                                        <i class="bi bi-x-circle me-1"></i>Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Botones de atajos rapidos de fecha -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-2 pt-2 border-top border-secondary border-opacity-10">
+                                <span class="small text-muted fw-semibold me-1"><i class="bi bi-lightning-charge text-warning me-1"></i>Atajos de fecha:</span>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" style="font-size: 0.75rem;" id="btnAtajoHoy">Hoy</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" id="btnAtajoAyer">Ayer</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" id="btnAtajo7Dias">Ultimos 7 dias</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" id="btnAtajoMes">Este Mes</button>
+                                <button type="button" class="btn btn-xs btn-outline-dark py-0 px-2" style="font-size: 0.75rem;" id="btnAtajoTodos">Ver Todo</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -743,20 +2186,58 @@
             </section>
 
             <!-- ====================================================
-                 VISTA 6: PADRÓN DE INTEGRANTES (SOLO ADMIN)
+                 VISTA 6: PADRON DE INTEGRANTES (SOLO ADMIN/DIRECTIVA)
                  ==================================================== -->
             <section id="view-integrantes" class="spa-view role-restricted" data-allowed-roles="ADMIN,DIRECTIVA">
                 <div class="card table-card mb-4">
-                    <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <div>
-                            <h5 class="fw-bold mb-0"><i class="bi bi-people text-danger me-2"></i>Padrón Oficial de Integrantes</h5>
-                            <small class="text-muted">Miembros acreditados del Club de Robótica (FP-UNE)</small>
+                    <div class="card-header bg-white py-3 border-0">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-0"><i class="bi bi-people text-danger me-2"></i>Padron Oficial de Integrantes</h5>
+                                <small class="text-muted">Miembros acreditados del Club de Robotica (FP-UNE)</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border py-2 px-3" id="contadorIntegrantes">
+                                    <i class="bi bi-list-check me-1"></i> Cargando miembros...
+                                </span>
+                                <button class="btn btn-sm btn-danger fw-semibold role-restricted" data-allowed-roles="ADMIN,DIRECTIVA" id="btnNuevoIntegrante">
+                                    <i class="bi bi-person-plus-fill me-1"></i> Nuevo Integrante
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" id="btnRecargarIntegrantes" title="Actualizar">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="text" class="form-control form-control-sm" id="inputBuscarIntegrante" placeholder="Buscar por nombre o CI...">
-                            <button class="btn btn-sm btn-outline-danger" id="btnRecargarIntegrantes">
-                                <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
-                            </button>
+                        <div class="bg-light p-2 rounded-3 border">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-5">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control" id="inputBuscarIntegrante" placeholder="Buscar por nombre, CI, carrera o email...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select form-select-sm" id="filtroIntegranteRol">
+                                        <option value="">Todos los roles</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                        <option value="DIRECTIVA">DIRECTIVA</option>
+                                        <option value="MIEMBRO">MIEMBRO</option>
+                                        <option value="COORDINADOR">COORDINADOR</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm" id="filtroIntegranteEstado">
+                                        <option value="">Todos los estados</option>
+                                        <option value="ACTIVO">ACTIVO</option>
+                                        <option value="INACTIVO">INACTIVO</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" id="btnLimpiarFiltrosIntegrante" title="Limpiar filtros">
+                                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -766,17 +2247,18 @@
                                     <tr>
                                         <th scope="col" class="ps-4">ID</th>
                                         <th scope="col">Nombre y Apellido</th>
-                                        <th scope="col">Cédula (CI)</th>
+                                        <th scope="col">Cedula (CI)</th>
                                         <th scope="col">Carnet Univ.</th>
                                         <th scope="col">Carrera</th>
                                         <th scope="col">Rol</th>
                                         <th scope="col">RFID UID</th>
                                         <th scope="col">Estado</th>
+                                        <th scope="col" class="text-end pe-4">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaIntegrantes">
                                     <tr>
-                                        <td colspan="8" class="text-center py-4 text-muted">Cargando padrón de miembros...</td>
+                                        <td colspan="9" class="text-center py-4 text-muted">Cargando padron de miembros...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -788,30 +2270,44 @@
         </main>
 
         <footer class="bg-white py-3 px-4 border-top text-center text-muted small">
-            &copy; 2026 Club de Robótica - Facultad Politécnica (Universidad Nacional del Este). Todos los derechos reservados.
+            &copy; 2026 Club de Robotica - Facultad Politecnica (Universidad Nacional del Este). Todos los derechos reservados.
         </footer>
 
     </div>
 
 </div>
 
-<!-- Modal de Confirmación para Aprobar Préstamo -->
+<!-- Modal de Confirmacion para Aprobar Prestamo -->
 <div class="modal fade" id="modalAprobarPrestamo" tabindex="-1" aria-labelledby="modalAprobarPrestamoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalAprobarPrestamoLabel"><i class="bi bi-shield-check me-2"></i>Aprobar Solicitud de Préstamo</h5>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-shield-check"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalAprobarPrestamoLabel">Aprobar Solicitud de Préstamo</h5>
+                        <small class="text-white-50">Confirmación transaccional con control de stock</small>
+                    </div>
+                </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <p class="mb-3">¿Deseas confirmar la aprobación del préstamo <strong id="modalPrestamoIdText">#</strong>?</p>
-                <div class="alert alert-info py-2 small mb-0">
-                    <i class="bi bi-info-circle me-1"></i> Se ejecutará un <strong>bloqueo pesimista de stock (LockModeType.PESSIMISTIC_WRITE)</strong> en MySQL para garantizar atomicidad y disponibilidad transaccional.
+                <div class="text-center py-2 mb-3">
+                    <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-2">
+                        <i class="bi bi-check2-circle fs-1"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">¿Deseas confirmar la aprobación?</h5>
+                    <p class="text-muted mb-0">Solicitud de préstamo <span class="badge bg-primary fs-6 px-2" id="modalPrestamoIdText">#</span></p>
+                </div>
+                <div class="alert alert-info py-2 small mb-0 rounded-3 border-0 bg-info bg-opacity-10 text-dark">
+                    <i class="bi bi-shield-check text-success me-1"></i> El stock disponible de los materiales solicitados se actualizará y reservará automáticamente.
                 </div>
             </div>
-            <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success fw-semibold" id="btnConfirmarAprobacion">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-success fw-semibold px-4" id="btnConfirmarAprobacion">
                     <i class="bi bi-check-lg me-1"></i> Aprobar Préstamo
                 </button>
             </div>
@@ -819,12 +2315,1064 @@
     </div>
 </div>
 
+<!-- ========================================================
+     MODALES CRUD: MATERIALES / INVENTARIO
+     ======================================================== -->
+<!-- Modal Crear / Editar Material -->
+<div class="modal fade" id="modalMaterial" tabindex="-1" aria-labelledby="modalMaterialTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-cpu"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalMaterialTitulo">Nuevo Componente</h5>
+                        <small class="text-white-50">Gestión de insumos y equipos del inventario</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formMaterial">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="materialIdInput">
+                    <div class="modal-section-title mb-2"><i class="bi bi-info-circle text-primary"></i> Datos Generales</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-7">
+                            <label for="materialNombreInput" class="form-label">Nombre del Componente <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-cpu"></i></span>
+                                <input type="text" class="form-control" id="materialNombreInput" placeholder="Ej: Arduino Mega 2560 R3" required>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="materialCategoriaSelect" class="form-label">Categoría <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-tag"></i></span>
+                                <select class="form-select" id="materialCategoriaSelect" required>
+                                    <option value="">Selecciona categoría...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="materialMarcaInput" class="form-label">Marca</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-building"></i></span>
+                                <input type="text" class="form-control" id="materialMarcaInput" placeholder="Ej: Arduino, Espressif, NXP">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="materialModeloInput" class="form-label">Modelo</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-upc"></i></span>
+                                <input type="text" class="form-control" id="materialModeloInput" placeholder="Ej: Rev 3, ESP-WROOM-32">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section-title mb-2"><i class="bi bi-box-seam text-primary"></i> Stock y Ubicación</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="materialCantidadInput" class="form-label">Cantidad Total <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-123"></i></span>
+                                <input type="number" class="form-control" id="materialCantidadInput" min="0" value="1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="materialEstadoSelect" class="form-label">Estado Operativo <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-shield-check"></i></span>
+                                <select class="form-select" id="materialEstadoSelect" required>
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+                                    <option value="BAJA">BAJA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="materialUbicacionInput" class="form-label">Ubicación Física</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" class="form-control" id="materialUbicacionInput" placeholder="Ej: Estante A - Gaveta 3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section-title mb-2"><i class="bi bi-file-text text-primary"></i> Especificaciones</div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="materialDescripcionInput" class="form-label">Descripción y Notas Técnicas</label>
+                            <textarea class="form-control" id="materialDescripcionInput" rows="2" placeholder="Detalles técnicos, pines, uso recomendado..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" id="btnGuardarMaterial">
+                        <i class="bi bi-save me-1"></i> Guardar Material
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ver Detalle Material -->
+<div class="modal fade" id="modalVerMaterial" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-info text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-info-circle"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Ficha de Componente</h5>
+                        <small class="text-white-50">Detalles e información de inventario</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="cuerpoVerMaterial">
+                <!-- Se llena dinamicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODALES CRUD: INTEGRANTES / PADRON
+     ======================================================== -->
+<!-- Modal Crear / Editar Integrante -->
+<div class="modal fade" id="modalIntegrante" tabindex="-1" aria-labelledby="modalIntegranteTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-person-vcard"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalIntegranteTitulo">Nuevo Integrante</h5>
+                        <small class="text-white-50">Registro en el padrón del club y asignación RFID</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formIntegrante">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="integranteIdInput">
+                    
+                    <div class="modal-section-title mb-2"><i class="bi bi-person text-primary"></i> Datos Personales</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="integranteNombreInput" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="integranteNombreInput" placeholder="Ej: Carlos" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="integranteApellidoInput" class="form-label">Apellido <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="integranteApellidoInput" placeholder="Ej: García" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="integranteCiInput" class="form-label">Cédula de Identidad (CI) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-card-heading"></i></span>
+                                <input type="text" class="form-control" id="integranteCiInput" placeholder="Ej: 4567890" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="integranteCarnetInput" class="form-label">Carnet Universitario <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-person-badge"></i></span>
+                                <input type="text" class="form-control" id="integranteCarnetInput" placeholder="Ej: FP-2023-089" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="integranteTelefonoInput" class="form-label">Teléfono / WhatsApp</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-telephone"></i></span>
+                                <input type="text" class="form-control" id="integranteTelefonoInput" placeholder="Ej: 0981 123456">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="integranteEmailInput" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="integranteEmailInput" placeholder="correo@fpune.edu.py" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section-title mb-2"><i class="bi bi-award text-primary"></i> Carrera y Rol Institucional</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="integranteCarreraSelect" class="form-label">Carrera Académica</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-book"></i></span>
+                                <select class="form-select" id="integranteCarreraSelect">
+                                    <option value="INGENIERIA_DE_SISTEMAS">Ingeniería de Sistemas</option>
+                                    <option value="INGENIERIA_ELECTRICA">Ingeniería Eléctrica</option>
+                                    <option value="ANALISIS_DE_SISTEMAS">Análisis de Sistemas</option>
+                                    <option value="LICENCIATURA_EN_TURISMO">Licenciatura en Turismo</option>
+                                    <option value="COLABORADOR">Colaborador Externo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="integranteRolSelect" class="form-label">Rol en el Club <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-person-gear"></i></span>
+                                <select class="form-select" id="integranteRolSelect" required>
+                                    <option value="MIEMBRO">MIEMBRO</option>
+                                    <option value="DIRECTIVA">DIRECTIVA</option>
+                                    <option value="ADMIN">ADMIN</option>
+                                    <option value="COORDINADOR">COORDINADOR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="integranteEstadoSelect" class="form-label">Estado <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-toggle-on"></i></span>
+                                <select class="form-select" id="integranteEstadoSelect" required>
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="INACTIVO">INACTIVO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section-card mb-4">
+                        <div class="modal-section-title mb-2 text-dark"><i class="bi bi-broadcast text-primary"></i> Tarjeta RFID (IoT Asistencia)</div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-12">
+                                <label for="integranteNfcInput" class="form-label">UID Tarjeta Física</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-muted"><i class="bi bi-upc-scan"></i></span>
+                                    <input type="text" class="form-control font-monospace text-uppercase fw-bold" id="integranteNfcInput" placeholder="Ej: A1B2C3D4">
+                                    <button class="btn btn-outline-primary" type="button" id="btnCapturarRfid" title="Capturar tarjeta escaneada en el ESP32">
+                                        <i class="bi bi-upc-scan me-1"></i> Capturar
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button" id="btnGenerarRfid" title="Generar un nuevo UID único aleatorio">
+                                        <i class="bi bi-magic me-1"></i> Generar
+                                    </button>
+                                    <button class="btn btn-outline-success" type="button" id="btnGrabarRfid" title="Grabar este UID en la tarjeta física a través del ESP32">
+                                        <i class="bi bi-sd-card me-1"></i> Grabar
+                                    </button>
+                                </div>
+                                <small class="text-muted d-block mt-2" id="rfidCapturaStatus" style="font-size: 0.78rem;">
+                                    <i class="bi bi-broadcast text-primary me-1"></i>Acerca tarjeta al ESP32 | Generar | Grabar
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section-title mb-2"><i class="bi bi-key text-primary"></i> Credenciales de Acceso</div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="integrantePasswordInput" class="form-label">Contraseña de Acceso</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="integrantePasswordInput" placeholder="Dejar en blanco para usar la cédula (CI) por defecto">
+                            </div>
+                            <small class="text-muted mt-1 d-block" style="font-size: 0.78rem;">Si se está editando, dejar en blanco mantendrá la contraseña actual.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" id="btnGuardarIntegrante">
+                        <i class="bi bi-save me-1"></i> Guardar Integrante
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ver Detalle Integrante -->
+<div class="modal fade" id="modalVerIntegrante" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-person-lines-fill"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Ficha del Integrante</h5>
+                        <small class="text-white-50">Información del padrón y estado de membresía</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="cuerpoVerIntegrante">
+                <!-- Se llena dinamicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODALES CRUD: PRESTAMOS Y SOLICITUDES
+     ======================================================== -->
+<!-- Modal Nueva Solicitud de Prestamo -->
+<div class="modal fade" id="modalNuevoPrestamo" tabindex="-1" aria-labelledby="modalNuevoPrestamoTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-box-seam"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalNuevoPrestamoTitulo">Nueva Solicitud de Préstamo</h5>
+                        <small class="text-white-50">Solicitud y asignación de materiales e insumos</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formNuevoPrestamo">
+                <div class="modal-body p-4">
+                    <!-- Paso 1: Solicitante y Proyecto -->
+                    <div class="modal-section-title mb-2">
+                        <i class="bi bi-person-badge text-primary"></i> 1. Solicitante y Destino
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <!-- Integrante Solicitante Autocomplete / Buscador -->
+                        <div class="col-md-6 position-relative">
+                            <label class="form-label d-flex justify-content-between align-items-center mb-1">
+                                <span>Integrante Solicitante <span class="text-danger">*</span></span>
+                                <span class="badge bg-light text-secondary border fw-normal" id="prestamoSolicitanteBadgeRol" style="font-size: 0.7rem;">Buscar por nombre o CI</span>
+                            </label>
+                            <div id="contenedorBuscadorIntegrante" class="position-relative">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control border-start-0 ps-0" id="prestamoIntegranteBusqueda" placeholder="Buscar por nombre, CI o carnet..." autocomplete="off">
+                                </div>
+                                <div id="prestamoIntegranteResultados" class="list-group position-absolute w-100 shadow-lg mt-1 border rounded-3" style="max-height: 240px; overflow-y: auto; z-index: 1060; display: none; background: white;">
+                                </div>
+                            </div>
+                            <div id="prestamoIntegranteSeleccionado" class="card border-primary border-opacity-50 bg-primary bg-opacity-10 p-2 mt-2 rounded-3 entity-selected-card" style="display: none;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2 overflow-hidden">
+                                        <div class="user-avatar-circle flex-shrink-0" id="prestamoSelAvatar" style="width: 34px; height: 34px; font-size: 0.85rem; background: var(--brand-primary); color: white;">U</div>
+                                        <div class="text-truncate">
+                                            <strong id="prestamoSelNombre" class="d-block text-dark lh-sm text-truncate" style="font-size: 0.88rem;">Nombre Completo</strong>
+                                            <small id="prestamoSelDetalle" class="text-muted d-block" style="font-size: 0.75rem;">CI: 123456 | Carnet: 2023-01</small>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1 flex-shrink-0" id="btnLimpiarIntegranteSel" title="Cambiar solicitante">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Hidden select sincronizado para validacion y submit estandar -->
+                            <select class="form-select d-none" id="prestamoIntegranteSelect" required>
+                                <option value="">Seleccionar solicitante...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="prestamoProyectoSelect" class="form-label">Proyecto Asignado <small class="text-muted fw-normal">(Opcional)</small></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-kanban"></i></span>
+                                <select class="form-select" id="prestamoProyectoSelect">
+                                    <option value="">Ninguno / Préstamo General</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 2: Componente / Material Requerido -->
+                    <div class="modal-section-title mb-2">
+                        <i class="bi bi-cpu text-primary"></i> 2. Componente o Material Requerido
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8 position-relative">
+                            <label class="form-label d-flex justify-content-between align-items-center mb-1">
+                                <span>Material del Inventario <span class="text-danger">*</span></span>
+                                <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.7rem;">Buscar por nombre o stock</span>
+                            </label>
+                            <div id="contenedorBuscadorMaterial" class="position-relative">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control border-start-0 ps-0" id="prestamoMaterialBusqueda" placeholder="Buscar Arduino, sensor, cable, resistencia..." autocomplete="off">
+                                </div>
+                                <div id="prestamoMaterialResultados" class="list-group position-absolute w-100 shadow-lg mt-1 border rounded-3" style="max-height: 240px; overflow-y: auto; z-index: 1060; display: none; background: white;">
+                                </div>
+                            </div>
+                            <div id="prestamoMaterialSeleccionado" class="card border-info border-opacity-50 bg-info bg-opacity-10 p-2 mt-2 rounded-3 entity-selected-card" style="display: none;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2 overflow-hidden">
+                                        <div class="kpi-icon bg-info text-white flex-shrink-0" style="width: 34px; height: 34px; font-size: 0.95rem; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-cpu"></i>
+                                        </div>
+                                        <div class="text-truncate">
+                                            <strong id="prestamoSelMaterialNombre" class="d-block text-dark lh-sm text-truncate" style="font-size: 0.88rem;">Nombre Material</strong>
+                                            <small id="prestamoSelMaterialDetalle" class="text-muted d-block" style="font-size: 0.75rem;">Disp: 5 un. | Lab</small>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1 flex-shrink-0" id="btnLimpiarMaterialSel" title="Cambiar material">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <select class="form-select d-none" id="prestamoMaterialSelect" required>
+                                <option value="">Seleccionar material del inventario...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="prestamoCantidadInput" class="form-label">Cantidad a Prestar <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-123"></i></span>
+                                <input type="number" class="form-control" id="prestamoCantidadInput" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3: Plazos y Justificación -->
+                    <div class="modal-section-title mb-2">
+                        <i class="bi bi-calendar-check text-primary"></i> 3. Plazos y Justificación
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="prestamoFechaDevolucionInput" class="form-label">Fecha Prevista de Devolución <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar-event"></i></span>
+                                <input type="date" class="form-control" id="prestamoFechaDevolucionInput" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado Inicial de la Solicitud</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-hourglass-split"></i></span>
+                                <input type="text" class="form-control bg-light text-muted fw-semibold" value="SOLICITADO (Pendiente de Aprobación)" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="prestamoDescripcionInput" class="form-label">Justificación y Uso Previsto</label>
+                            <textarea class="form-control" id="prestamoDescripcionInput" rows="2" placeholder="Describe brevemente el motivo del préstamo, pruebas a realizar o proyecto..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold" id="btnCrearPrestamoSubmit">
+                        <i class="bi bi-send-fill me-1"></i> Registrar Solicitud
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Estado de Prestamo -->
+<div class="modal fade" id="modalEditarPrestamo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-secondary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-sliders"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Gestionar Préstamo <span id="editarPrestamoIdLabel">#</span></h5>
+                        <small class="text-white-50">Actualización de estado operativo y fechas</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarPrestamo">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="editarPrestamoIdInput">
+                    <div class="mb-3">
+                        <label for="editarPrestamoEstadoSelect" class="form-label">Actualizar Estado <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-activity"></i></span>
+                            <select class="form-select" id="editarPrestamoEstadoSelect" required>
+                                <option value="SOLICITADO">SOLICITADO (Pendiente)</option>
+                                <option value="APROBADO">APROBADO (Listo para retirar)</option>
+                                <option value="ENTREGADO">ENTREGADO (En uso por el integrante)</option>
+                                <option value="DEVUELTO">DEVUELTO (Reincorporado a stock)</option>
+                                <option value="CANCELADO">CANCELADO (Anulado)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editarPrestamoFechaDevolucionInput" class="form-label">Fecha Límite Prevista</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar-event"></i></span>
+                            <input type="date" class="form-control" id="editarPrestamoFechaDevolucionInput">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editarPrestamoDescripcionInput" class="form-label">Observaciones Adicionales</label>
+                        <textarea class="form-control" id="editarPrestamoDescripcionInput" rows="2" placeholder="Notas sobre el estado, entrega o devolución..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4">
+                        <i class="bi bi-check2-circle me-1"></i> Actualizar Préstamo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ver Detalle Prestamo -->
+<div class="modal fade" id="modalVerPrestamo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-box-seam"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Detalle del Préstamo <span id="verPrestamoIdLabel">#</span></h5>
+                        <small class="text-white-50">Registro del solicitante y componentes prestados</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="cuerpoVerPrestamo">
+                <!-- Se llena dinamicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL GESTIONAR CATEGORIAS
+     ======================================================== -->
+<div class="modal fade" id="modalGestionarCategorias" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-secondary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-tags"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Gestión de Categorías de Inventario</h5>
+                        <small class="text-white-50">Clasificación de componentes y herramientas</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formNuevaCategoria" class="mb-4 modal-section-card">
+                    <input type="hidden" id="inputCategoriaId" value="">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0 text-dark" id="tituloFormCategoria"><i class="bi bi-plus-circle text-primary me-1"></i> Registrar Nueva Categoría</h6>
+                        <button type="button" id="btnCancelarEdicionCategoria" class="btn btn-sm btn-outline-secondary d-none">
+                            <i class="bi bi-x-lg me-1"></i> Cancelar edición
+                        </button>
+                    </div>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label small text-muted mb-1">Nombre</label>
+                            <input type="text" class="form-control" id="inputNombreCategoria" placeholder="Ej: Sensores y Módulos" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small text-muted mb-1">Descripción</label>
+                            <input type="text" class="form-control" id="inputDescCategoria" placeholder="Descripción breve">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" id="btnGuardarCategoria" class="btn btn-primary w-100 fw-semibold" style="padding: 0.65rem 0.5rem;">
+                                <i class="bi bi-save me-1"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="table-responsive rounded-3 border">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70px;">ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th class="text-end" style="width: 110px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaModalCategorias">
+                            <tr><td colspan="4" class="text-center py-2 text-muted">Cargando categorías...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL MI PERFIL
+     ======================================================== -->
+<div class="modal fade" id="modalMiPerfil" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-person-circle"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Mi Perfil</h5>
+                        <small class="text-white-50">Gestiona tus datos personales y credenciales de acceso</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formMiPerfil">
+                <div class="modal-body p-4">
+                    <!-- Profile Hero Banner -->
+                    <div class="profile-hero-card d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="profile-avatar-large" id="perfilModalAvatar">U</div>
+                            <div>
+                                <h5 class="fw-bold mb-1 text-white" id="perfilModalNombre">Mi Perfil</h5>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="badge bg-white text-primary fw-bold" id="perfilModalRolBadge" style="font-size: 0.75rem;">MIEMBRO</span>
+                                    <small class="text-white-50" id="perfilModalEmail">usuario@correo.com</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end d-none d-sm-block">
+                            <span class="badge bg-black bg-opacity-25 text-white border border-white border-opacity-25 px-2 py-1">
+                                <i class="bi bi-shield-check me-1"></i> Sesión Activa
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Información Personal -->
+                    <div class="modal-section-title"><i class="bi bi-person-vcard text-primary"></i> Información Personal</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="perfilNombreInput" class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="perfilNombreInput" required placeholder="Tu nombre">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilApellidoInput" class="form-label">Apellido <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="perfilApellidoInput" required placeholder="Tu apellido">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilEmailInput" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="perfilEmailInput" required placeholder="correo@ejemplo.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilTelefonoInput" class="form-label">Teléfono Móvil</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" class="form-control" id="perfilTelefonoInput" placeholder="Ej: 0981 123456">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seguridad y Contraseña -->
+                    <div class="modal-section-card mb-4">
+                        <div class="modal-section-title mb-2 text-dark"><i class="bi bi-shield-lock text-primary"></i> Cambiar Contraseña <small class="text-muted fw-normal ms-1">(Opcional)</small></div>
+                        <p class="text-muted small mb-3">Deja estos campos en blanco si deseas mantener tu contraseña actual.</p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="perfilPasswordInput" class="form-label">Nueva Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-muted"><i class="bi bi-key"></i></span>
+                                    <input type="password" class="form-control" id="perfilPasswordInput" placeholder="Mínimo 4 caracteres">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="perfilConfirmPasswordInput" class="form-label">Confirmar Nueva Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-muted"><i class="bi bi-check2-circle"></i></span>
+                                    <input type="password" class="form-control" id="perfilConfirmPasswordInput" placeholder="Repite la nueva contraseña">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Académica e Institucional -->
+                    <div class="modal-section-title"><i class="bi bi-mortarboard text-primary"></i> Información Institucional y Acceso IoT</div>
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3">
+                            <div class="profile-chip-card">
+                                <div class="chip-label"><i class="bi bi-card-heading me-1"></i> Cédula (CI)</div>
+                                <input type="text" class="chip-value form-control-plaintext p-0 border-0 bg-transparent fw-bold text-dark" id="perfilCiText" readonly value="-">
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="profile-chip-card">
+                                <div class="chip-label"><i class="bi bi-person-badge me-1"></i> Carnet Univ.</div>
+                                <input type="text" class="chip-value form-control-plaintext p-0 border-0 bg-transparent fw-bold text-dark" id="perfilCarnetText" readonly value="-">
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="profile-chip-card">
+                                <div class="chip-label"><i class="bi bi-book me-1"></i> Carrera</div>
+                                <input type="text" class="chip-value form-control-plaintext p-0 border-0 bg-transparent fw-bold text-dark" id="perfilCarreraText" readonly value="-">
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="profile-chip-card">
+                                <div class="chip-label"><i class="bi bi-person-gear me-1"></i> Rol Actual</div>
+                                <input type="text" class="chip-value form-control-plaintext p-0 border-0 bg-transparent fw-bold text-dark" id="perfilRolText" readonly value="-">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="profile-chip-card d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="chip-label"><i class="bi bi-broadcast me-1 text-primary"></i> Tarjeta RFID Vinculada (IoT Asistencia)</div>
+                                    <code class="fw-bold fs-6 text-primary" id="perfilNfcText">No asignada</code>
+                                </div>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                                    <i class="bi bi-wifi me-1"></i> Sensor IoT
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                        <i class="bi bi-check-circle me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL CREAR / EDITAR PROYECTO
+     ======================================================== -->
+<div class="modal fade" id="modalProyecto" tabindex="-1" aria-labelledby="modalProyectoTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-kanban"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="modalProyectoTitulo">Registrar Proyecto</h5>
+                        <small class="text-white-50">Iniciativas, prototipos y desarrollos del club</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formProyecto">
+                <input type="hidden" id="proyectoId">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="proyectoNombre" class="form-label">Nombre del Proyecto <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-lightbulb"></i></span>
+                            <input type="text" class="form-control" id="proyectoNombre" placeholder="Ej: Seguidor de Línea Velocista" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="proyectoDescripcion" class="form-label">Descripción / Objetivos</label>
+                        <textarea class="form-control" id="proyectoDescripcion" rows="3" placeholder="Detalles de la investigación, desarrollo o competencias..."></textarea>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="proyectoFechaInicio" class="form-label">Fecha Inicio <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar-check"></i></span>
+                                <input type="date" class="form-control" id="proyectoFechaInicio" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label for="proyectoFechaFin" class="form-label">Fecha Fin (Estimada)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar-x"></i></span>
+                                <input type="date" class="form-control" id="proyectoFechaFin">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="proyectoEstado" class="form-label">Estado del Proyecto</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-flag"></i></span>
+                            <select class="form-select" id="proyectoEstado">
+                                <option value="PLANIFICADO">PLANIFICADO</option>
+                                <option value="ACTIVO" selected>ACTIVO</option>
+                                <option value="FINALIZADO">FINALIZADO</option>
+                                <option value="CANCELADO">CANCELADO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" id="btnGuardarProyecto">
+                        <i class="bi bi-save me-1"></i> Guardar Proyecto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL VER DETALLES DE PROYECTO
+     ======================================================== -->
+<div class="modal fade" id="modalVerProyecto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-kanban"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="verProyectoNombre">Detalle del Proyecto</h5>
+                        <small class="text-white-50">Resumen y estado general de la iniciativa</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="verProyectoCuerpo">
+                <!-- Se rellena dinamicamente desde JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL CONFIRMAR ELIMINACION REUTILIZABLE
+     ======================================================== -->
+<div class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-header-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <div>
+                        <h5 class="modal-title mb-0">Confirmar Eliminación</h5>
+                        <small class="text-white-50">Esta acción no se puede deshacer</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="d-inline-flex p-3 rounded-circle bg-danger bg-opacity-10 text-danger mb-3">
+                    <i class="bi bi-trash3-fill fs-1"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">¿Estás completamente seguro?</h5>
+                <p class="text-muted mb-0" id="textoConfirmarEliminacion">¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede revertir.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-danger fw-semibold px-4" id="btnConfirmarEliminacionAccion">
+                    <i class="bi bi-trash-fill me-1"></i> Eliminar Definitivamente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     BARRA DE NAVEGACION INFERIOR PARA DISPOSITIVOS MOVILES
+     ======================================================== -->
+<nav class="mobile-bottom-nav d-lg-none" id="mobileBottomNav" aria-label="Navegación móvil inferior">
+    <a href="#dashboard" class="mobile-nav-item active" data-view="view-dashboard">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Inicio</span>
+    </a>
+    <a href="#prestamos" class="mobile-nav-item" data-view="view-prestamos">
+        <i class="bi bi-box-seam"></i>
+        <span>Préstamos</span>
+    </a>
+    <a href="#inventario" class="mobile-nav-item" data-view="view-inventario">
+        <i class="bi bi-cpu"></i>
+        <span>Stock</span>
+    </a>
+    <a href="#proyectos" class="mobile-nav-item" data-view="view-proyectos">
+        <i class="bi bi-kanban"></i>
+        <span>Proyectos</span>
+    </a>
+    <button type="button" class="mobile-nav-item btn-mobile-menu" id="btnMobileDrawerOpen" aria-label="Abrir menú completo">
+        <i class="bi bi-list"></i>
+        <span>Menú</span>
+    </button>
+</nav>
+
+<!-- Boton Flotante (FAB) para abrir el Asistente de IA Polito -->
+<button type="button" class="fab-asistente-ia" id="btnChatbotFab" data-bs-toggle="offcanvas" data-bs-target="#offcanvasChatIa" aria-label="Abrir asistente de IA Polito" title="Consultar a Polito IA">
+    <img src="assets/images/polito/polito_pfp.png" alt="Polito" class="fab-avatar-img">
+    <span class="fab-status-badge" title="Polito En Línea"></span>
+</button>
+
+<!-- ========================================================
+     OFFCANVAS ASISTENTE DE IA (POLITO - GOOGLE GEMINI)
+     ======================================================== -->
+<div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="offcanvasChatIa" aria-labelledby="offcanvasChatIaLabel" style="width: 440px; max-width: 100vw; z-index: 1065;">
+    <!-- Mascota Polito Flotante al Costado del Chat (Sidekick Desktop & Badge Mobile) -->
+    <div id="politoSidekickCompanion" class="polito-sidekick-container">
+        <div class="polito-sidekick-card">
+            <div class="polito-speech-bubble" id="politoSidekickSpeech">¡Hola! ¿En qué te ayudo?</div>
+            <img id="politoSidekickImg" src="assets/images/polito/polito_saludando.png" alt="Polito" class="polito-sidekick-avatar" title="¡Haz clic para interactuar con Polito!">
+            <div class="polito-sidekick-badge">
+                Polito
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas-header py-3 px-3 border-bottom text-white" style="background: linear-gradient(135deg, #12355B 0%, #0d2744 100%);">
+        <div class="d-flex align-items-center gap-2">
+            <div class="position-relative">
+                <img src="assets/images/polito/polito_pfp.png" alt="Polito" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;">
+                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 10px; height: 10px;"></span>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="offcanvas-title fw-bold mb-0 text-white" id="offcanvasChatIaLabel">Polito</h6>
+                    <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.62rem; letter-spacing: 0.03em;">FP-UNE</span>
+                </div>
+                <small class="text-white-50 d-block" style="font-size: 0.72rem;">Asistente Inteligente • Inventario en Vivo</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+            <button type="button" class="btn btn-sm btn-outline-light border-0 d-none" id="btnToggleConfigIa" title="Configuración de Gemini (Solo Administradores)">
+                <i class="bi bi-gear-fill"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-light border-0" id="btnLimpiarChatIa" title="Reiniciar conversación">
+                <i class="bi bi-arrow-counterclockwise fs-6"></i>
+            </button>
+            <button type="button" class="btn-close btn-close-white ms-1" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- Panel Plegable de Configuracion de API Key (Solo Administradores) -->
+    <div class="collapse bg-light border-bottom p-3" id="panelConfigApiKey">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small fw-bold text-dark"><i class="bi bi-key-fill text-warning me-1"></i>Configuración de Gemini API</span>
+            <span class="badge bg-secondary-subtle text-secondary small" id="badgeEstadoApiKey">Consultando...</span>
+        </div>
+        <p class="text-muted small mb-2" style="font-size: 0.76rem;">
+            Como Administrador, puedes usar una clave gratuita de <strong>Google AI Studio</strong> (sin costo en <a href="https://aistudio.google.com" target="_blank" class="fw-semibold">aistudio.google.com</a>) o utilizar la clave global del servidor.
+        </p>
+        <div class="input-group input-group-sm mb-2">
+            <input type="password" class="form-control" id="inputApiKeyIa" placeholder="Pega tu API Key de Gemini aquí...">
+            <button class="btn btn-primary" type="button" id="btnGuardarApiKeyIa">Guardar</button>
+            <button class="btn btn-outline-secondary" type="button" id="btnBorrarApiKeyIa" title="Eliminar clave local">Borrar</button>
+        </div>
+        <div class="mb-2">
+            <label for="selectModeloIa" class="form-label small fw-semibold text-dark mb-1" style="font-size: 0.74rem;">
+                <i class="bi bi-cpu-fill text-primary me-1"></i>Modelo de Gemini:
+            </label>
+            <select class="form-select form-select-sm" id="selectModeloIa">
+                <option value="gemini-flash-lite-latest" selected>⚡ Gemini Flash-Lite (Recomendado: Ligero, rápido y alta cuota)</option>
+                <option value="gemini-3.5-flash-lite">🌱 Gemini 3.5 Flash-Lite (Alta velocidad)</option>
+                <option value="gemini-3.1-flash-lite">🔹 Gemini 3.1 Flash-Lite (Ligero)</option>
+                <option value="gemini-3.5-flash">🚀 Gemini 3.5 Flash (Equilibrado)</option>
+            </select>
+        </div>
+        <small class="text-muted d-block" style="font-size: 0.7rem;" id="infoEstadoServidorKey">Verificando estado del servidor...</small>
+    </div>
+
+    <div class="offcanvas-body p-0 chat-ia-container">
+        <!-- Contenedor de Sugerencias Rápidas (Chips) -->
+        <div class="p-2 bg-white border-bottom d-flex gap-2 overflow-x-auto" style="scrollbar-width: thin;">
+            <button type="button" class="chat-chip chip-prompt" data-prompt="¿Qué proyectos puedo armar con el stock actual?">
+                💡 ¿Qué armar hoy?
+            </button>
+            <button type="button" class="chat-chip chip-prompt" data-prompt="¿Cómo solicito un préstamo y qué reglas aplican?">
+                📜 Reglas de préstamo
+            </button>
+            <button type="button" class="chat-chip chip-prompt" data-prompt="Ideas para un robot seguidor de línea velocista con nuestros sensores">
+                🏎️ Seguidor de línea
+            </button>
+            <button type="button" class="chat-chip chip-prompt" data-prompt="Ideas para un proyecto de IoT con ESP32">
+                📡 Proyecto IoT
+            </button>
+        </div>
+
+        <!-- Historial de Mensajes -->
+        <div class="chat-ia-mensajes" id="chatIaMensajes">
+            <div class="chat-bubble chat-bubble-bot shadow-sm">
+                <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
+                    <img src="assets/images/polito/polito_pfp.png" alt="Polito" class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover; background: #EEF2F6;">
+                    <div>
+                        <strong class="small d-block text-dark fw-bold">Polito</strong>
+                        <small class="text-muted" style="font-size: 0.68rem;">Asistente FP-UNE</small>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle ms-auto" style="font-size: 0.65rem;">
+                        <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem;"></i>En línea
+                    </span>
+                </div>
+                <div class="small fw-semibold text-primary mb-2"><i class="bi bi-stars text-warning me-1"></i>¡Bienvenido al Laboratorio del Club de Robótica!</div>
+                <p class="mb-2">¡Hola! Soy <strong>Polito</strong>, tu asistente de la <strong>FP-UNE</strong> y copiloto en el laboratorio.</p>
+                <p class="mb-0">Conozco el <strong>inventario real disponible</strong>, los componentes en stock, y las normativas de préstamo y asistencia. ¿En qué proyecto te gustaría trabajar hoy o qué dudas tienes?</p>
+            </div>
+        </div>
+
+        <!-- Indicador de Escritura / Pensando -->
+        <div class="px-3 py-2 bg-light border-top d-flex align-items-center gap-2" id="chatIaTyping" style="display: none !important;">
+            <img src="assets/images/polito/polito_pensando.png" alt="Polito Pensando" class="rounded-circle border shadow-xs" style="width: 26px; height: 26px; object-fit: cover;">
+            <div class="chat-typing-dots">
+                <span></span><span></span><span></span>
+            </div>
+            <small class="text-muted fw-medium" style="font-size: 0.75rem;">Polito está consultando el inventario y pensando...</small>
+        </div>
+
+        <!-- Formulario de Entrada de Mensaje -->
+        <div class="p-3 bg-white border-top">
+            <form id="formChatIa" autocomplete="off" class="d-flex gap-2">
+                <input type="text" class="form-control rounded-pill px-3" id="inputMensajeIa" placeholder="Pregúntale a Polito sobre proyectos, materiales, reglamentos..." required>
+                <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;" id="btnEnviarMensajeIa" title="Enviar consulta">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </form>
+            <small class="text-muted d-block text-center mt-2" style="font-size: 0.68rem;">
+                Potenciado por Gemini
+            </small>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap 5 Bundle JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-<!-- Scripts de la Aplicación con Cache Busting -->
-<script src="js/auth.js?v=2.2"></script>
-<script src="js/dashboard.js?v=2.2"></script>
+<!-- Scripts de la Aplicacion con Cache Busting -->
+<script src="js/auth.js?v=20261018_11"></script>
+<script src="js/dashboard.js?v=20261018_11"></script>
 
 </body>
 </html>

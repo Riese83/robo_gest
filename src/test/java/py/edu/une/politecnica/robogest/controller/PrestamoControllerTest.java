@@ -7,9 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import py.edu.une.politecnica.robogest.dao.*;
+import py.edu.une.politecnica.robogest.dto.ActualizarPrestamoRequestDTO;
 import py.edu.une.politecnica.robogest.dto.AprobarPrestamoRequestDTO;
+import py.edu.une.politecnica.robogest.dto.CrearPrestamoRequestDTO;
 import py.edu.une.politecnica.robogest.dto.PrestamoResponseDTO;
 import py.edu.une.politecnica.robogest.entity.Integrante;
+import py.edu.une.politecnica.robogest.entity.Material;
 import py.edu.une.politecnica.robogest.entity.Prestamo;
 import py.edu.une.politecnica.robogest.entity.enums.CarreraEnum;
 import py.edu.une.politecnica.robogest.entity.enums.EstadoIntegranteEnum;
@@ -20,8 +24,11 @@ import py.edu.une.politecnica.robogest.service.PrestamoService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,13 +37,31 @@ class PrestamoControllerTest {
     @Mock
     private PrestamoService prestamoService;
 
+    @Mock
+    private PrestamoDAO prestamoDAO;
+
+    @Mock
+    private IntegranteDAO integranteDAO;
+
+    @Mock
+    private MaterialDAO materialDAO;
+
+    @Mock
+    private ProyectoDAO proyectoDAO;
+
+    @Mock
+    private DetallePrestamoDAO detallePrestamoDAO;
+
     private JwtTokenProvider jwtTokenProvider;
     private PrestamoController prestamoController;
 
     @BeforeEach
     void setUp() {
         jwtTokenProvider = new JwtTokenProvider();
-        prestamoController = new PrestamoController(prestamoService, jwtTokenProvider);
+        prestamoController = new PrestamoController(
+                prestamoService, jwtTokenProvider, prestamoDAO,
+                integranteDAO, materialDAO, proyectoDAO, detallePrestamoDAO
+        );
     }
 
     private String generarTokenConRol(String email, RolEnum rol) {
@@ -104,5 +129,92 @@ class PrestamoControllerTest {
 
         assertTrue(ex.getMessage().contains("Acceso denegado"));
         verify(prestamoService, never()).aprobarPrestamo(any());
+    }
+
+    @Test
+    @DisplayName("Debe listar prestamos exitosamente")
+    void testListarPrestamos() {
+        when(prestamoDAO.findAll()).thenReturn(List.of());
+
+        String tokenAdmin = "Bearer " + generarTokenConRol("admin@fpune.edu.py", RolEnum.ADMIN);
+        Response response = prestamoController.listarPrestamos(tokenAdmin);
+
+        assertEquals(200, response.getStatus());
+        List<?> lista = (List<?>) response.getEntity();
+        assertTrue(lista.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Debe rechazar listar prestamos sin cabecera de autorizacion")
+    void testListarPrestamos_SinToken() {
+        assertThrows(SecurityException.class, () -> prestamoController.listarPrestamos(null));
+    }
+
+    @Test
+    @DisplayName("Debe crear un nuevo prestamo y retornar HTTP 201")
+    void testCrearPrestamo() {
+        Integrante integrante = new Integrante();
+        integrante.setId(10L);
+        when(integranteDAO.findById(10L)).thenReturn(Optional.of(integrante));
+
+        Material material = new Material();
+        material.setId(5L);
+        material.setNombre("Sensor");
+        when(materialDAO.findById(5L)).thenReturn(Optional.of(material));
+
+        Prestamo guardado = new Prestamo();
+        guardado.setId(101L);
+        guardado.setIntegrante(integrante);
+        guardado.setEstado(EstadoPrestamoEnum.SOLICITADO);
+        when(prestamoDAO.save(any(Prestamo.class))).thenReturn(guardado);
+
+        CrearPrestamoRequestDTO request = new CrearPrestamoRequestDTO();
+        request.setIntegranteId(10L);
+        request.setMaterialId(5L);
+        request.setCantidad(2);
+
+        String tokenAdmin = "Bearer " + generarTokenConRol("admin@fpune.edu.py", RolEnum.ADMIN);
+        Response response = prestamoController.crearPrestamo(tokenAdmin, request);
+
+        assertEquals(201, response.getStatus());
+        PrestamoResponseDTO dto = (PrestamoResponseDTO) response.getEntity();
+        assertEquals(101L, dto.getPrestamoId());
+        assertEquals("SOLICITADO", dto.getEstado());
+        verify(detallePrestamoDAO).save(any());
+    }
+
+    @Test
+    @DisplayName("Debe actualizar el estado de un prestamo")
+    void testActualizarPrestamo() {
+        Prestamo existente = new Prestamo();
+        existente.setId(15L);
+        existente.setEstado(EstadoPrestamoEnum.SOLICITADO);
+
+        when(prestamoDAO.findById(15L)).thenReturn(Optional.of(existente));
+        when(prestamoDAO.update(any(Prestamo.class))).thenReturn(existente);
+
+        String authAdmin = "Bearer " + generarTokenConRol("admin@fpune.edu.py", RolEnum.ADMIN);
+        ActualizarPrestamoRequestDTO request = new ActualizarPrestamoRequestDTO();
+        request.setEstado("ENTREGADO");
+
+        Response response = prestamoController.actualizarPrestamo(15L, authAdmin, request);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(EstadoPrestamoEnum.ENTREGADO, existente.getEstado());
+        assertNotNull(existente.getFechaEntrega());
+    }
+
+    @Test
+    @DisplayName("Debe eliminar un prestamo por ID")
+    void testEliminarPrestamo() {
+        String authAdmin = "Bearer " + generarTokenConRol("admin@fpune.edu.py", RolEnum.ADMIN);
+        Prestamo existente = new Prestamo();
+        existente.setId(22L);
+        when(prestamoDAO.findById(22L)).thenReturn(Optional.of(existente));
+
+        Response response = prestamoController.eliminarPrestamo(22L, authAdmin);
+
+        assertEquals(204, response.getStatus());
+        verify(prestamoDAO).delete(existente);
     }
 }

@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String autenticar(String identificador, String passwordPlana) {
         if (identificador == null || identificador.isBlank() || passwordPlana == null || passwordPlana.isBlank()) {
-            throw new CredencialesInvalidasException("El identificador y la contraseña no pueden estar vacios");
+            throw new CredencialesInvalidasException("El identificador y la contrasena no pueden estar vacios");
         }
 
         // Buscar primero por email; si no se encuentra, buscar por CI (cedula)
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IntegranteInactivoException("El integrante se encuentra inactivo en el sistema");
         }
 
-        // Validar hash de contraseña con jBCrypt
+        // Validar hash de contrasena con jBCrypt
         String hashAlmacenado = integrante.getPasswordHash();
         if (hashAlmacenado == null || hashAlmacenado.isBlank() || !BCrypt.checkpw(passwordPlana, hashAlmacenado)) {
             throw new CredencialesInvalidasException("Credenciales invalidas");

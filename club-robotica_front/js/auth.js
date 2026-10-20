@@ -1,6 +1,6 @@
 /**
- * auth.js - Módulo de Autenticación y Manejo de JWT para Robo_Gest
- * Club de Robótica - FP-UNE
+ * auth.js - Modulo de Autenticacion y Manejo de JWT para Robo_Gest
+ * Club de Robotica - FP-UNE
  */
 
 (function (global) {
@@ -13,28 +13,51 @@
     };
 
     /**
-     * Resuelve dinámicamente la URL base de la API REST según el entorno.
+     * Utilidad global para escapar caracteres HTML especiales y prevenir inyecciones XSS
+     */
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    global.escapeHtml = escapeHtml;
+
+    /**
+     * Resuelve dinamicamente la URL base de la API REST segun el entorno.
      */
     function resolveApiBaseUrl() {
-        const path = window.location.pathname ? window.location.pathname.toLowerCase() : '';
+        const protocol = (window.location.protocol || '').toLowerCase();
         const origin = window.location.origin || '';
+        const port = window.location.port || '';
+        const path = (window.location.pathname || '').toLowerCase();
 
-        // Si la ruta contiene /robo_gest (despliegue estándar en Tomcat bajo contexto /robo_gest)
+        // 1. Si se abre directamente desde el sistema de archivos (file://)
+        if (protocol === 'file:' || !origin || origin === 'null' || origin.startsWith('file')) {
+            return 'http://localhost:8080/robo_gest/api';
+        }
+
+        // 2. Si corre en un servidor estatico de desarrollo frontend (ej: Live Server 5500, Vite 5173, Python 8000)
+        if (port && port !== '8080' && port !== '80' && port !== '443') {
+            return 'http://localhost:8080/robo_gest/api';
+        }
+
+        // 3. Si la ruta contiene /robo_gest (despliegue estandar en Tomcat bajo contexto /robo_gest)
         if (path.includes('/robo_gest')) {
             return `${origin}/robo_gest/api`;
         }
-        // Si se ejecuta en localhost o un servidor en la raíz
-        if (origin && origin !== 'null' && !origin.startsWith('file')) {
-            return `${origin}/api`;
-        }
-        // Entorno de desarrollo local independiente por defecto
-        return 'http://localhost:8080/robo_gest/api';
+
+        // 4. Si se ejecuta en la raiz de un host o detras de un reverse proxy
+        return `${origin}/api`;
     }
 
     const API_BASE_URL = resolveApiBaseUrl();
 
     /**
-     * Decodifica de forma segura la carga útil (payload) de un JWT en formato JSON.
+     * Decodifica de forma segura la carga util (payload) de un JWT en formato JSON.
      * @param {string} token
      * @returns {object|null}
      */
@@ -66,18 +89,19 @@
     function isTokenExpired(token) {
         const claims = parseJwt(token);
         if (!claims || !claims.exp) return true;
-        // exp está en segundos, Date.now() en milisegundos
+        // exp esta en segundos, Date.now() en milisegundos
         const expirationTimeMs = claims.exp * 1000;
         return Date.now() >= expirationTimeMs;
     }
 
     /**
-     * Guarda el token y la información del usuario en sessionStorage (o localStorage).
+     * Guarda el token y la informacion del usuario en sessionStorage y localStorage.
      */
     function setSession(authData) {
         if (!authData || !authData.token) return;
 
         sessionStorage.setItem(STORAGE_KEYS.TOKEN, authData.token);
+        localStorage.setItem(STORAGE_KEYS.TOKEN, authData.token);
 
         // Si viene un objeto DTO estructurado, lo enriquecemos con los claims del JWT
         const claims = parseJwt(authData.token) || {};
@@ -90,15 +114,33 @@
             tokenType: authData.tokenType || 'Bearer'
         };
 
-        sessionStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData));
+        const userJson = JSON.stringify(userData);
+        sessionStorage.setItem(STORAGE_KEYS.USER, userJson);
+        localStorage.setItem(STORAGE_KEYS.USER, userJson);
     }
 
     /**
-     * Obtiene el token JWT actual almacenado.
+     * Actualiza los datos del usuario en la sesion actual.
+     */
+    function setUser(userData) {
+        if (!userData) return;
+        const userJson = JSON.stringify(userData);
+        sessionStorage.setItem(STORAGE_KEYS.USER, userJson);
+        localStorage.setItem(STORAGE_KEYS.USER, userJson);
+    }
+
+    /**
+     * Obtiene el token JWT actual almacenado (consulta sessionStorage con fallback a localStorage).
      * @returns {string|null}
      */
     function getToken() {
-        const token = sessionStorage.getItem(STORAGE_KEYS.TOKEN);
+        let token = sessionStorage.getItem(STORAGE_KEYS.TOKEN);
+        if (!token) {
+            token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+            if (token && !isTokenExpired(token)) {
+                sessionStorage.setItem(STORAGE_KEYS.TOKEN, token);
+            }
+        }
         if (!token || isTokenExpired(token)) {
             if (token) clearSession();
             return null;
@@ -113,7 +155,13 @@
     function getUser() {
         const token = getToken();
         if (!token) return null;
-        const userStr = sessionStorage.getItem(STORAGE_KEYS.USER);
+        let userStr = sessionStorage.getItem(STORAGE_KEYS.USER);
+        if (!userStr) {
+            userStr = localStorage.getItem(STORAGE_KEYS.USER);
+            if (userStr) {
+                sessionStorage.setItem(STORAGE_KEYS.USER, userStr);
+            }
+        }
         if (!userStr) return null;
         try {
             return JSON.parse(userStr);
@@ -142,7 +190,7 @@
     }
 
     /**
-     * Verifica si el usuario cuenta con una sesión válida no expirada.
+     * Verifica si el usuario cuenta con una sesion valida no expirada.
      * @returns {boolean}
      */
     function isAuthenticated() {
@@ -150,7 +198,7 @@
     }
 
     /**
-     * Limpia la sesión actual.
+     * Limpia la sesion actual en todos los almacenamientos.
      */
     function clearSession() {
         sessionStorage.removeItem(STORAGE_KEYS.TOKEN);
@@ -160,7 +208,7 @@
     }
 
     /**
-     * Cierra sesión y redirige a la página de login.
+     * Cierra sesion y redirige a la pagina de login.
      */
     function logout() {
         clearSession();
@@ -169,19 +217,20 @@
 
     /**
      * Envoltorio interceptor para Fetch API.
-     * Inyecta automáticamente la cabecera 'Authorization: Bearer <token>'
-     * y captura respuestas HTTP 401 para redirigir a login.html si el token expiró.
+     * Inyecta automaticamente la cabecera 'Authorization: Bearer <token>'
+     * y captura respuestas HTTP 401 para redirigir a login.html si el token expiro.
      *
      * @param {string} endpoint - Ruta relativa (ej: '/prestamos/1/aprobar') o absoluta
-     * @param {RequestInit} [options={}] - Opciones de fetch estándar
+     * @param {RequestInit} [options={}] - Opciones de fetch estandar
      * @returns {Promise<Response>}
      */
     async function authFetch(endpoint, options = {}) {
-        // Resolver URL completa
+        // Resolver URL completa dinamicamente
         let url = endpoint;
         if (!endpoint.startsWith('http://') && !endpoint.startsWith('https://')) {
             const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-            url = `${API_BASE_URL}${cleanEndpoint}`;
+            const baseUrl = resolveApiBaseUrl();
+            url = `${baseUrl}${cleanEndpoint}`;
         }
 
         // Preparar cabeceras
@@ -190,12 +239,13 @@
             headers.set('Accept', 'application/json');
         }
 
-        // Si se envía un cuerpo no-FormData, asegurar Content-Type application/json
-        if (options.body && !(options.body instanceof FormData) && !headers.has('Content-Type')) {
+        // Si es POST, PUT o PATCH y no es FormData, asegurar Content-Type application/json
+        const method = (options.method || 'GET').toUpperCase();
+        if ((options.body || method === 'POST' || method === 'PUT' || method === 'PATCH') && !(options.body instanceof FormData) && !headers.has('Content-Type')) {
             headers.set('Content-Type', 'application/json');
         }
 
-        // Inyectar token JWT si existe sesión activa
+        // Inyectar token JWT si existe sesion activa
         const token = getToken();
         if (token) {
             headers.set('Authorization', `Bearer ${token}`);
@@ -209,31 +259,31 @@
         try {
             const response = await fetch(url, config);
 
-            // Interceptar error 401 Unauthorized (Token expirado o inválido)
+            // Interceptar error 401 Unauthorized (Token expirado o invalido)
             if (response.status === 401) {
-                console.warn('[Auth] Error HTTP 401 recibido. Redirigiendo a login por sesión expirada.');
+                console.warn('[Auth] Error HTTP 401 recibido. Redirigiendo a login por sesion expirada.');
                 clearSession();
-                // Redirigir al usuario al login con parámetro para mostrar notificación
+                // Redirigir al usuario al login con parametro para mostrar notificacion
                 window.location.href = 'login.html?expired=true';
                 return response;
             }
 
             return response;
         } catch (error) {
-            console.error('[Auth] Error en petición authFetch:', error);
+            console.error('[Auth] Error en peticion authFetch:', error);
             throw error;
         }
     }
 
     /**
-     * Realiza el inicio de sesión enviando LoginRequestDTO a /api/auth/login.
-     * @param {string} identificador - Cédula o Email
-     * @param {string} password - Contraseña en texto plano
+     * Realiza el inicio de sesion enviando LoginRequestDTO a /api/auth/login.
+     * @param {string} identificador - Cedula o Email
+     * @param {string} password - Contrasena en texto plano
      * @returns {Promise<object>} AuthResponseDTO
      */
     async function login(identificador, password) {
         if (!identificador || !password) {
-            throw new Error('Debe ingresar el identificador (cédula o email) y la contraseña.');
+            throw new Error('Debe ingresar el identificador (cedula o email) y la contrasena.');
         }
 
         const payload = {
@@ -253,11 +303,11 @@
         const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-            let errorMsg = 'Error al iniciar sesión.';
+            let errorMsg = 'Error al iniciar sesion.';
             if (data && data.message) {
                 errorMsg = data.message;
             } else if (response.status === 401) {
-                errorMsg = 'Credenciales inválidas. Verifique su número de cédula y contraseña.';
+                errorMsg = 'Credenciales invalidas. Verifique su numero de cedula y contrasena.';
             } else if (response.status === 403) {
                 errorMsg = 'Su cuenta se encuentra inactiva. Contacte a la directiva del club.';
             }
@@ -270,8 +320,8 @@
     }
 
     /**
-     * Guardia de ruta para proteger páginas privadas (ej: dashboard.html).
-     * Si el usuario no está autenticado, redirige a login.html.
+     * Guardia de ruta para proteger paginas privadas (ej: dashboard.html).
+     * Si el usuario no esta autenticado, redirige a login.html.
      */
     function requireAuth() {
         if (!isAuthenticated()) {
@@ -282,8 +332,8 @@
     }
 
     /**
-     * Guardia para la página de login.html.
-     * Si ya está autenticado, redirige automáticamente a dashboard.html.
+     * Guardia para la pagina de login.html.
+     * Si ya esta autenticado, redirige automaticamente a dashboard.html.
      */
     function redirectIfAuthenticated() {
         if (isAuthenticated()) {
@@ -306,11 +356,11 @@
         const form = document.querySelector(formSelector);
         if (!form) return;
 
-        // Mensaje si venía de sesión expirada
+        // Mensaje si venia de sesion expirada
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('expired') === 'true') {
             mostrarMensajeAlerta(
-                'Su sesión ha expirado por seguridad. Por favor, ingrese sus credenciales nuevamente.',
+                'Su sesion ha expirado por seguridad. Por favor, ingrese sus credenciales nuevamente.',
                 'warning',
                 alertContainerSelector
             );
@@ -337,13 +387,13 @@
                 return;
             }
 
-            // Estado de carga en el botón
-            const textoOriginal = submitBtn ? submitBtn.innerHTML : 'Iniciar sesión';
+            // Estado de carga en el boton
+            const textoOriginal = submitBtn ? submitBtn.innerHTML : 'Iniciar sesion';
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = `
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:inline-block; width:1rem; height:1rem; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .75s linear infinite;"></span>
-                    Iniciando sesión...
+                    Iniciando sesion...
                 `;
             }
 
@@ -404,7 +454,7 @@
         }
     }
 
-    // Exportar módulo en objeto global
+    // Exportar modulo en objeto global
     global.Auth = {
         API_BASE_URL,
         login,
@@ -412,6 +462,7 @@
         authFetch,
         getToken,
         getUser,
+        setUser,
         getUserRole,
         hasAnyRole,
         isAuthenticated,

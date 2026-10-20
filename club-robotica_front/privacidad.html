@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club de Robótica | Políticas de Privacidad</title>
+    <link rel="icon" type="image/png" href="assets/images/brand/logo_icono.png">
+
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Estilos globales -->
+    <link rel="stylesheet" href="css/style.css?v=2.7">
+    <link rel="stylesheet" href="css/responsive.css?v=2.7">
+</head>
+
+<body>
+
+    <!-- ========================================
+         BARRA DE NAVEGACION
+    ======================================== -->
+    <header class="site-header">
+        <nav class="navbar container">
+            <!-- Identidad del club -->
+            <a href="index.html" class="brand">
+                <img src="assets/images/brand/logo_icono.png" alt="Logo Club de Robótica FP-UNE" class="brand-logo">
+                <span class="brand-name">Club de Robótica</span>
+            </a>
+
+            <!-- Botón hamburguesa -->
+            <button class="nav-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Menú de navegación -->
+            <div class="nav-menu">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Inicio</a>
+                    <a href="objetivos.html" class="nav-link">Objetivos</a>
+                    <a href="categorias.html" class="nav-link">Categorías</a>
+                    <a href="contacto.html" class="nav-link">Contacto</a>
+                </div>
+
+                <!-- Acceso al inicio de sesión -->
+                <a href="login.html" class="btn btn--primary nav-login">Iniciar sesión</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========================================
+         CONTENIDO PRINCIPAL
+    ======================================== -->
+    <main>
+        <section class="privacy-section">
+            <div class="container">
+                <article class="privacy-card">
+                    <h1>Políticas de Privacidad y Tratamiento de Datos</h1>
+                    <span class="privacy-badge">RoboGest &bull; Plataforma Institucional FP-UNE</span>
+
+                    <!-- Bloque 1: Responsable -->
+                    <div class="privacy-section-block">
+                        <h2>1. Identificación del Responsable</h2>
+                        <p>
+                            La plataforma <strong>RoboGest</strong> es un sistema de gestión académica, de inventario y control de asistencias administrado por el <strong>Club de Robótica</strong> de la <strong>Facultad Politécnica de la Universidad Nacional del Este (FP-UNE)</strong>, con sede en el Campus Universitario Km 8 Acaray, Ciudad del Este, República del Paraguay.
+                        </p>
+                    </div>
+
+                    <!-- Bloque 2: Datos Recopilados -->
+                    <div class="privacy-section-block">
+                        <h2>2. Datos Personales Recopilados</h2>
+                        <p>Para el correcto funcionamiento de las actividades del club y la asignación de responsabilidades, el sistema gestiona:</p>
+                        <ul>
+                            <li><strong>Datos de Identificación:</strong> Número de Cédula de Identidad (CI), Nombres, Apellidos y Carnet Universitario.</li>
+                            <li><strong>Datos de Contacto y Académicos:</strong> Número telefónico, correo electrónico institucional/personal y carrera universitaria de grado.</li>
+                            <li><strong>Datos Operativos y de Asistencia IoT:</strong> Identificador de tarjeta NFC/RFID (UID), registros de marcación de entrada y salida (fecha, hora y dispositivo lector) en talleres y proyectos.</li>
+                            <li><strong>Gestión de Materiales:</strong> Historial de solicitudes, préstamos activos y devoluciones de componentes y equipos del laboratorio.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Bloque 3: Finalidad -->
+                    <div class="privacy-section-block">
+                        <h2>3. Finalidad del Tratamiento de los Datos</h2>
+                        <p>Los datos almacenados en RoboGest se utilizan de manera exclusiva para fines formativos, de seguridad patrimonial y de gestión interna:</p>
+                        <ul>
+                            <li>Autenticación y control de acceso seguro a los módulos del sistema según el rol asignado (Administrador, Directiva o Miembro).</li>
+                            <li>Control y trazabilidad del inventario de materiales, herramientas, sensores y microcontroladores del club.</li>
+                            <li>Monitoreo de horas de participación de los integrantes en actividades de extensión y proyectos tecnológicos.</li>
+                            <li><strong>No comercialización:</strong> La información bajo ninguna circunstancia será vendida, transferida ni cedida a terceros o entidades externas a la institución.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Bloque 4: Seguridad -->
+                    <div class="privacy-section-block">
+                        <h2>4. Seguridad y Confidencialidad Técnica</h2>
+                        <p>RoboGest implementa medidas de seguridad técnicas para proteger la confidencialidad e integridad de la información:</p>
+                        <ul>
+                            <li><strong>Cifrado de Credenciales:</strong> Las contraseñas se almacenan mediante algoritmos criptográficos irreversibles con salting (jBCrypt).</li>
+                            <li><strong>Sesiones Seguras:</strong> La autenticación utiliza tokens firmados JSON Web Tokens (JWT) con expiración controlada.</li>
+                            <li><strong>Comunicaciones Cifradas:</strong> Las conexiones públicas se canalizan a través de túneles cifrados con protocolo seguro HTTPS / SSL.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Bloque 5: Derechos -->
+                    <div class="privacy-section-block">
+                        <h2>5. Derechos de los Integrantes</h2>
+                        <p>
+                            De conformidad con los principios de protección de datos de carácter privado (Ley N° 1682/01 y modificatorias en Paraguay) y la normativa universitaria, todo integrante activo o inactivo tiene derecho a solicitar el acceso, actualización, rectificación o eliminación de sus datos personales poniéndose en contacto con la comisión directiva del club.
+                        </p>
+                    </div>
+
+                    <!-- Bloque 6: Contacto -->
+                    <div class="privacy-section-block">
+                        <h2>6. Canales de Contacto Oficiales</h2>
+                        <p>Para cualquier consulta o solicitud vinculada a estas políticas, puedes comunicarte a través de:</p>
+                        <ul>
+                            <li><strong>Correo Institucional:</strong> <a href="mailto:fpune.clubderobotica@gmail.com" style="color: var(--color-secondary); text-decoration: underline;">fpune.clubderobotica@gmail.com</a></li>
+                            <li><strong>Instagram Oficial:</strong> <a href="https://www.instagram.com/cdr_fpune/" target="_blank" rel="noopener noreferrer" style="color: var(--color-secondary); text-decoration: underline;">@cdr_fpune</a></li>
+                            <li><strong>Sede:</strong> Centro Tecnológico, Facultad Politécnica - Universidad Nacional del Este (Km 8 Acaray, Ciudad del Este).</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========================================
+         PIE DE PAGINA (FOOTER)
+    ======================================== -->
+    <footer class="site-footer">
+        <div class="container footer-container">
+            <div class="footer-grid">
+                <!-- Columna 1: Identidad -->
+                <div class="footer-col footer-col--brand">
+                    <div class="footer-brand">
+                        <img src="assets/images/brand/logo_icono.png" alt="Logo Club de Robótica FP-UNE" class="footer-logo">
+                        <div>
+                            <span class="footer-brand-title">Club de Robótica</span>
+                            <span class="footer-brand-sub">FP - UNE</span>
+                        </div>
+                    </div>
+                    <p class="footer-description">
+                        Espacio universitario dedicado al fomento de la ciencia, la robótica, la programación y el trabajo en equipo en la Facultad Politécnica de la Universidad Nacional del Este.
+                    </p>
+                </div>
+
+                <!-- Columna 2: Enlaces Rápidos -->
+                <div class="footer-col">
+                    <h3 class="footer-title">Navegación</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="objetivos.html">Objetivos</a></li>
+                        <li><a href="categorias.html">Categorías</a></li>
+                        <li><a href="contacto.html">Contacto</a></li>
+                        <li><a href="privacidad.html">Privacidad</a></li>
+                        <li><a href="login.html">Acceso a RoboGest</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 3: Contacto -->
+                <div class="footer-col">
+                    <h3 class="footer-title">Contacto</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <span class="footer-contact-icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            </span>
+                            <a href="mailto:fpune.clubderobotica@gmail.com">fpune.clubderobotica@gmail.com</a>
+                        </li>
+                        <li>
+                            <span class="footer-contact-icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            </span>
+                            <a href="https://wa.me/595973436151" target="_blank" rel="noopener noreferrer">+595 973 436151</a>
+                        </li>
+                        <li>
+                            <span class="footer-contact-icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            </span>
+                            <a href="https://wa.me/595982961405" target="_blank" rel="noopener noreferrer">+595 982 961405</a>
+                        </li>
+                        <li>
+                            <span class="footer-contact-icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                            </span>
+                            <a href="https://www.instagram.com/cdr_fpune/" target="_blank" rel="noopener noreferrer">@cdr_fpune</a>
+                        </li>
+                        <li>
+                            <span class="footer-contact-icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </span>
+                            <span>Lun - Vie: 08:00 a 18:00</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna 4: Institución & Ubicación -->
+                <div class="footer-col">
+                    <h3 class="footer-title">Institución</h3>
+                    <address class="footer-address">
+                        <p class="footer-institution"><strong>Facultad Politécnica</strong></p>
+                        <p>Universidad Nacional del Este</p>
+                        <p>Campus Universitario Km 8 Acaray</p>
+                        <p>Calle Universidad Nacional del Este c/ Rca. del Paraguay</p>
+                        <p>Ciudad del Este, Paraguay</p>
+                    </address>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Club de Robótica FP-UNE. Todos los derechos reservados.</p>
+                <p class="footer-meta">RoboGest &bull; <a href="privacidad.html" class="footer-privacy-link">Políticas de Privacidad</a> &bull; Plataforma de Gestión Institucional</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js?v=2.7"></script>
+    <script src="js/navigation.js?v=2.7"></script>
+
+</body>
+
+</html>

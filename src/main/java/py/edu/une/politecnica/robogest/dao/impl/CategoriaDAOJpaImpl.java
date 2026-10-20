@@ -23,7 +23,7 @@ public class CategoriaDAOJpaImpl extends GenericDAOJpaImpl<Categoria, Long> impl
     @Override
     public Optional<Categoria> findByNombre(String nombre) {
         String jpql = "SELECT c FROM Categoria c WHERE c.nombre = :nombre";
-        TypedQuery<Categoria> query = em.createQuery(jpql, Categoria.class);
+        TypedQuery<Categoria> query = getEntityManager().createQuery(jpql, Categoria.class);
         query.setParameter("nombre", nombre);
         return query.getResultStream().findFirst();
     }

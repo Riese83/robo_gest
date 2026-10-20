@@ -1,5 +1,5 @@
 /* ========================================
-   PÁGINA CATEGORÍAS - INTRODUCCIÓN
+   PAGINA CATEGORIAS - INTRODUCCION
 ======================================== */
 
 .categories-hero {
@@ -24,7 +24,7 @@
 }
 
 
-/* Etiqueta: CATEGORÍAS */
+/* Etiqueta: CATEGORIAS */
 
 .categories-hero .section-label {
 
@@ -45,7 +45,7 @@
 }
 
 
-/* Título principal */
+/* Titulo principal */
 
 .categories-hero h1 {
 
@@ -62,7 +62,7 @@
 }
 
 
-/* Descripción */
+/* Descripcion */
 
 .categories-hero p:not(.section-label) {
 
@@ -77,7 +77,7 @@
 }
 
 /* ========================================
-   CATEGORÍAS DISPONIBLES
+   CATEGORIAS DISPONIBLES
 ======================================== */
 
 .available-categories {
@@ -89,7 +89,7 @@
 }
 
 
-/* Encabezado de la sección */
+/* Encabezado de la seccion */
 
 .available-categories__heading {
 
@@ -114,7 +114,7 @@
 
 
 /* ========================================
-   GRID DE CATEGORÍAS
+   GRID DE CATEGORIAS
 ======================================== */
 
 .categories-grid {
@@ -135,7 +135,7 @@
 
 
 /* ========================================
-   TARJETAS DE CATEGORÍAS
+   TARJETAS DE CATEGORIAS
 ======================================== */
 
 .category-card {
@@ -241,7 +241,7 @@
 }
 
 /* ========================================
-   MÁS CATEGORÍAS PRÓXIMAMENTE
+   MAS CATEGORIAS PROXIMAMENTE
 ======================================== */
 
 .coming-soon {
@@ -257,7 +257,7 @@
 
 
 /* ========================================
-   CONTENIDO DE LA SECCIÓN
+   CONTENIDO DE LA SECCION
 ======================================== */
 
 .coming-soon__content {
@@ -289,7 +289,7 @@
 
 
 /* ========================================
-   ANIMACIÓN DEL RELOJ
+   ANIMACION DEL RELOJ
 ======================================== */
 
 @keyframes hourglass-rotate {
@@ -327,7 +327,7 @@
 
 
 /* ========================================
-   DESCRIPCIÓN
+   DESCRIPCION
 ======================================== */
 
 .coming-soon p:not(.section-label) {
