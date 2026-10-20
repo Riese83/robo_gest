@@ -58,6 +58,7 @@
 
     /**
      * Decodifica de forma segura la carga util (payload) de un JWT en formato JSON.
+     * Soportando Base64Url sin padding y decodificacion de caracteres UTF-8 en cualquier navegador.
      * @param {string} token
      * @returns {object|null}
      */
@@ -65,33 +66,60 @@
         if (!token || typeof token !== 'string') return null;
         try {
             const parts = token.split('.');
-            if (parts.length !== 3) return null;
-            const base64Url = parts[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(
-                atob(base64)
-                    .split('')
-                    .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                    .join('')
-            );
+            if (parts.length < 2) return null;
+            let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+            // Completar relleno padding '=' de Base64 si falta
+            while (base64.length % 4 !== 0) {
+                base64 += '=';
+            }
+            // Decodificar Base64 a bytes binarios y convertirlos a texto UTF-8 seguro
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            let jsonPayload;
+            if (typeof TextDecoder !== 'undefined') {
+                jsonPayload = new TextDecoder('utf-8').decode(bytes);
+            } else {
+                jsonPayload = decodeURIComponent(
+                    Array.prototype.map.call(bytes, b => '%' + ('00' + b.toString(16)).slice(-2)).join('')
+                );
+            }
             return JSON.parse(jsonPayload);
         } catch (e) {
-            console.error('[Auth] Error al decodificar JWT:', e);
+            console.warn('[Auth] Error al decodificar JWT en cliente:', e);
             return null;
         }
     }
 
     /**
      * Verifica si el token JWT ha expirado.
+     * IMPORTANTE: No asume expiracion en el cliente ante fallos de parseo o desincronizacion de reloj;
+     * delega la verificacion criptografica estricta al backend (HTTP 401).
      * @param {string} token
      * @returns {boolean}
      */
     function isTokenExpired(token) {
+        if (!token || typeof token !== 'string') return true;
         const claims = parseJwt(token);
-        if (!claims || !claims.exp) return true;
-        // exp esta en segundos, Date.now() en milisegundos
-        const expirationTimeMs = claims.exp * 1000;
-        return Date.now() >= expirationTimeMs;
+        if (!claims || typeof claims.exp !== 'number') {
+            // Si no podemos leer los claims o exp no es numerico, NO asumimos expirado prematuramente;
+            // dejamos que el backend valide via 401 si realmente no es valido.
+            return false;
+        }
+
+        const nowSeconds = Math.floor(Date.now() / 1000);
+
+        // Si el token tiene fecha de emision (iat) y difiere en mas de 12 horas del reloj local del navegador,
+        // existe desincronizacion de reloj (clock skew) entre cliente y servidor.
+        // Confiamos en el backend para no bloquear al usuario por fecha local erronea.
+        if (typeof claims.iat === 'number' && Math.abs(nowSeconds - claims.iat) > 12 * 3600) {
+            console.warn('[Auth] Desincronizacion detectada entre reloj cliente y servidor. Delegando validacion al backend.');
+            return false;
+        }
+
+        return nowSeconds >= claims.exp;
     }
 
     /**
@@ -141,8 +169,12 @@
                 sessionStorage.setItem(STORAGE_KEYS.TOKEN, token);
             }
         }
-        if (!token || isTokenExpired(token)) {
-            if (token) clearSession();
+        if (!token) {
+            return null;
+        }
+        if (isTokenExpired(token)) {
+            console.warn('[Auth] Token JWT expirado detectado.');
+            clearSession();
             return null;
         }
         return token;
@@ -153,8 +185,6 @@
      * @returns {object|null}
      */
     function getUser() {
-        const token = getToken();
-        if (!token) return null;
         let userStr = sessionStorage.getItem(STORAGE_KEYS.USER);
         if (!userStr) {
             userStr = localStorage.getItem(STORAGE_KEYS.USER);
@@ -162,12 +192,29 @@
                 sessionStorage.setItem(STORAGE_KEYS.USER, userStr);
             }
         }
-        if (!userStr) return null;
-        try {
-            return JSON.parse(userStr);
-        } catch (e) {
-            return null;
+        if (userStr) {
+            try {
+                return JSON.parse(userStr);
+            } catch (e) {
+                console.warn('[Auth] Error al parsear datos de usuario en sesion:', e);
+            }
         }
+        // Fallback: si hay token pero no se guardo el objeto USER, extraerlo del JWT
+        const token = getToken();
+        if (token) {
+            const claims = parseJwt(token);
+            if (claims) {
+                return {
+                    id: claims.integranteId || null,
+                    nombreCompleto: claims.nombreCompleto || 'Usuario',
+                    email: claims.sub || '',
+                    ci: claims.ci || '',
+                    rol: (claims.rol || 'MIEMBRO').toUpperCase(),
+                    tokenType: 'Bearer'
+                };
+            }
+        }
+        return null;
     }
 
     /**
@@ -325,6 +372,7 @@
      */
     function requireAuth() {
         if (!isAuthenticated()) {
+            console.warn('[Auth] Acceso denegado: sesion inactiva o no iniciada. Redirigiendo a login.html.');
             window.location.href = 'login.html';
             return false;
         }
@@ -334,8 +382,19 @@
     /**
      * Guardia para la pagina de login.html.
      * Si ya esta autenticado, redirige automaticamente a dashboard.html.
+     * Si la pagina se abrio con ?expired=true o ?logout=true, no redirige y limpia la sesion.
      */
     function redirectIfAuthenticated() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('expired') === 'true' || urlParams.get('logout') === 'true') {
+                clearSession();
+                return false;
+            }
+        } catch (e) {
+            // Entorno sin URLSearchParams
+        }
+
         if (isAuthenticated()) {
             window.location.href = 'dashboard.html';
             return true;
